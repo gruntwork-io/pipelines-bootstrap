@@ -88,6 +88,15 @@ outputs:
   logs_account_id:
     description: "AWS Account ID of the Logs Account"
     value: ${{ steps.parse.outputs.logs_account_id }}
+  team_account_names:
+    description: ""
+    value: ${{ steps.setup-action.outputs.team_account_names }}
+  new_account_name:
+    description: ''
+    value: ${{ steps.setup-action.outputs.new_account_name }}
+  additional_data:
+    description: ''
+    value: ${{ steps.setup-action.outputs.additional_data }}
 
 runs:
   using: composite
