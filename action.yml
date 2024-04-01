@@ -4,9 +4,6 @@ inputs:
   token:
     description: "The GitHub token to use for checking out the infrastructure-live repo"
     required: true
-  distinct_id:
-    description: "Used to identify this workflow so that we can wait on it"
-    required: true
   deploy_branch_name:
     description: "The name of the configured deploy branch"
     required: false
