@@ -41,9 +41,9 @@ inputs:
     required: false
 
 outputs:
-  gruntwork_config:
-    description: "YAML string contents of .gruntwork/config.yml in infrastructure-pipelines repo"
-    value: ${{ steps.cache.outputs.gruntwork_config || steps.read_gruntwork_config.outputs.config }}
+  gruntwork_config_file:
+    description: "Absolute path to the .gruntwork/config.yml"
+    value: ${{ steps.cache.outputs.gruntwork_config_file || steps.setup-action.outputs.gruntwork_config_file }}
   role_name:
     description: "The AWS role to assume"
     value: ${{ steps.cache.outputs.role_name || steps.get_role_name.outputs.role_name }}
@@ -136,7 +136,7 @@ runs:
       shell: bash
       if: ${{ inputs.cache != '' }}
       run: |
-        echo "gruntwork_config=${{ toJson(fromJson(inputs.cache).gruntwork_config) }}" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_config_file=${{ toJson(fromJson(inputs.cache).gruntwork_config_file) }}" >> "$GITHUB_OUTPUT"
         echo "role_name=${{ fromJson(inputs.cache).role_name }}" >> "$GITHUB_OUTPUT"
         echo "role_session_name=${{ fromJson(inputs.cache).role_session_name }}" >> "$GITHUB_OUTPUT"
         echo "child_acct_role_name=${{ fromJson(inputs.cache).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
@@ -214,20 +214,8 @@ runs:
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           echo "working_directory=$WORKING_DIRECTORY" >> "$GITHUB_OUTPUT"
           echo "terragrunt_command=$TERRAGRUNT_COMMAND" >> "$GITHUB_OUTPUT"
-    - name: Read infra-pipelines' Gruntwork config file
-      id: read_gruntwork_config
-      if: ${{ inputs.cache == '' }}
-      shell: bash
-      # Multi-line strings syntax https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
-      run: |
-        echo "Reading infrastructure-pipelines' Gruntwork config file"
-        {
-          echo 'config<<EOF'
-          cat .gruntwork/config.yml
-          echo EOF
-        } >> "$GITHUB_OUTPUT"
+          echo "gruntwork_config_file=$(pwd)/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
 
-        config=$(cat .gruntwork/config.yml)
     - name: Generate role session name
       id: generate_role_session_name
       if: ${{ inputs.cache == '' }}
