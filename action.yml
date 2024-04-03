@@ -136,7 +136,7 @@ runs:
       shell: bash
       if: ${{ inputs.cache != '' }}
       run: |
-        echo "gruntwork_config=${{ fromJson(inputs.cache).gruntwork_config }}" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_config=${{ toJson(fromJson(inputs.cache).gruntwork_config) }}" >> "$GITHUB_OUTPUT"
         echo "role_name=${{ fromJson(inputs.cache).role_name }}" >> "$GITHUB_OUTPUT"
         echo "role_session_name=${{ fromJson(inputs.cache).role_session_name }}" >> "$GITHUB_OUTPUT"
         echo "child_acct_role_name=${{ fromJson(inputs.cache).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
