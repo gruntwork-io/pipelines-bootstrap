@@ -136,43 +136,43 @@ runs:
       shell: bash
       if: ${{ inputs.cache != '' }}
       run: |
-        echo "gruntwork_config=${{ fromJson(inputs.gruntwork_context).gruntwork_config }}" >> "$GITHUB_OUTPUT"
-        echo "role_name=${{ fromJson(inputs.gruntwork_context).role_name }}" >> "$GITHUB_OUTPUT"
-        echo "role_session_name=${{ fromJson(inputs.gruntwork_context).role_session_name }}" >> "$GITHUB_OUTPUT"
-        echo "child_acct_role_name=${{ fromJson(inputs.gruntwork_context).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
-        echo "pipelines_cli_version=${{ fromJson(inputs.gruntwork_context).pipelines_cli_version }}" >> "$GITHUB_OUTPUT"
-        echo "terraform_version=${{ fromJson(inputs.gruntwork_context).terraform_version }}" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_config=${{ fromJson(inputs.cache).gruntwork_config }}" >> "$GITHUB_OUTPUT"
+        echo "role_name=${{ fromJson(inputs.cache).role_name }}" >> "$GITHUB_OUTPUT"
+        echo "role_session_name=${{ fromJson(inputs.cache).role_session_name }}" >> "$GITHUB_OUTPUT"
+        echo "child_acct_role_name=${{ fromJson(inputs.cache).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
+        echo "pipelines_cli_version=${{ fromJson(inputs.cache).pipelines_cli_version }}" >> "$GITHUB_OUTPUT"
+        echo "terraform_version=${{ fromJson(inputs.cache).terraform_version }}" >> "$GITHUB_OUTPUT"
 
 
-        echo "terragrunt_version=${{ fromJson(inputs.gruntwork_context).terragrunt_version }}" >> "$GITHUB_OUTPUT"
-        echo "admins=${{ fromJson(inputs.gruntwork_context).admins }}" >> "$GITHUB_OUTPUT"
-        echo "workflow=${{ fromJson(inputs.gruntwork_context).workflow }}" >> "$GITHUB_OUTPUT"
-        echo "child_account_id=${{ fromJson(inputs.gruntwork_context).child_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "account_id=${{ fromJson(inputs.gruntwork_context).account_id }}" >> "$GITHUB_OUTPUT"
-        echo "branch=${{ fromJson(inputs.gruntwork_context).branch }}" >> "$GITHUB_OUTPUT"
+        echo "terragrunt_version=${{ fromJson(inputs.cache).terragrunt_version }}" >> "$GITHUB_OUTPUT"
+        echo "admins=${{ fromJson(inputs.cache).admins }}" >> "$GITHUB_OUTPUT"
+        echo "workflow=${{ fromJson(inputs.cache).workflow }}" >> "$GITHUB_OUTPUT"
+        echo "child_account_id=${{ fromJson(inputs.cache).child_account_id }}" >> "$GITHUB_OUTPUT"
+        echo "account_id=${{ fromJson(inputs.cache).account_id }}" >> "$GITHUB_OUTPUT"
+        echo "branch=${{ fromJson(inputs.cache).branch }}" >> "$GITHUB_OUTPUT"
 
 
-        echo "working_directory=${{ fromJson(inputs.gruntwork_context).working_directory }}" >> "$GITHUB_OUTPUT"
-        echo "terragrunt_command=${{ fromJson(inputs.gruntwork_context).terragrunt_command }}" >> "$GITHUB_OUTPUT"
-        echo "security_account_id=${{ fromJson(inputs.gruntwork_context).security_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "shared_account_id=${{ fromJson(inputs.gruntwork_context).shared_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "logs_account_id=${{ fromJson(inputs.gruntwork_context).logs_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "team_account_names=${{ fromJson(inputs.gruntwork_context).team_account_names }}" >> "$GITHUB_OUTPUT"
+        echo "working_directory=${{ fromJson(inputs.cache).working_directory }}" >> "$GITHUB_OUTPUT"
+        echo "terragrunt_command=${{ fromJson(inputs.cache).terragrunt_command }}" >> "$GITHUB_OUTPUT"
+        echo "security_account_id=${{ fromJson(inputs.cache).security_account_id }}" >> "$GITHUB_OUTPUT"
+        echo "shared_account_id=${{ fromJson(inputs.cache).shared_account_id }}" >> "$GITHUB_OUTPUT"
+        echo "logs_account_id=${{ fromJson(inputs.cache).logs_account_id }}" >> "$GITHUB_OUTPUT"
+        echo "team_account_names=${{ fromJson(inputs.cache).team_account_names }}" >> "$GITHUB_OUTPUT"
 
 
-        echo "new_account_name=${{ fromJson(inputs.gruntwork_context).new_account_name }}" >> "$GITHUB_OUTPUT"
-        echo "additional_data=${{ fromJson(inputs.gruntwork_context).additional_data }}" >> "$GITHUB_OUTPUT"
-        echo "org_name_prefix=${{ fromJson(inputs.gruntwork_context).org_name_prefix }}" >> "$GITHUB_OUTPUT"
-        echo "aws_region=${{ fromJson(inputs.gruntwork_context).aws_region }}" >> "$GITHUB_OUTPUT"
-        echo "requesting_team_name=${{ fromJson(inputs.gruntwork_context).requesting_team_name }}" >> "$GITHUB_OUTPUT"
-        echo "account_baseline_modules_version=${{ fromJson(inputs.gruntwork_context).account_baseline_modules_version }}" >> "$GITHUB_OUTPUT"
+        echo "new_account_name=${{ fromJson(inputs.cache).new_account_name }}" >> "$GITHUB_OUTPUT"
+        echo "additional_data=${{ fromJson(inputs.cache).additional_data }}" >> "$GITHUB_OUTPUT"
+        echo "org_name_prefix=${{ fromJson(inputs.cache).org_name_prefix }}" >> "$GITHUB_OUTPUT"
+        echo "aws_region=${{ fromJson(inputs.cache).aws_region }}" >> "$GITHUB_OUTPUT"
+        echo "requesting_team_name=${{ fromJson(inputs.cache).requesting_team_name }}" >> "$GITHUB_OUTPUT"
+        echo "account_baseline_modules_version=${{ fromJson(inputs.cache).account_baseline_modules_version }}" >> "$GITHUB_OUTPUT"
 
 
-        echo "account_baseline_cis_service_catalog_version=${{ fromJson(inputs.gruntwork_context).account_baseline_cis_service_catalog_version }}" >> "$GITHUB_OUTPUT"
-        echo "create_vpc=${{ fromJson(inputs.gruntwork_context).create_vpc }}" >> "$GITHUB_OUTPUT"
-        echo "tags=${{ fromJson(inputs.gruntwork_context).tags }}" >> "$GITHUB_OUTPUT"
-        echo "delegate_management=${{ fromJson(inputs.gruntwork_context).delegate_management }}" >> "$GITHUB_OUTPUT"
-        echo "delegate_repo_name=${{ fromJson(inputs.gruntwork_context).delegate_repo_name }}" >> "$GITHUB_OUTPUT"
+        echo "account_baseline_cis_service_catalog_version=${{ fromJson(inputs.cache).account_baseline_cis_service_catalog_version }}" >> "$GITHUB_OUTPUT"
+        echo "create_vpc=${{ fromJson(inputs.cache).create_vpc }}" >> "$GITHUB_OUTPUT"
+        echo "tags=${{ fromJson(inputs.cache).tags }}" >> "$GITHUB_OUTPUT"
+        echo "delegate_management=${{ fromJson(inputs.cache).delegate_management }}" >> "$GITHUB_OUTPUT"
+        echo "delegate_repo_name=${{ fromJson(inputs.cache).delegate_repo_name }}" >> "$GITHUB_OUTPUT"
 
     - name: Setup Action
       id: setup-action
