@@ -96,37 +96,37 @@ outputs:
     description: ""
     value: ${{ steps.cache.outputs.team_account_names || steps.setup-action.outputs.team_account_names }}
   new_account_name:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.new_account_name || steps.setup-action.outputs.new_account_name }}
   additional_data:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.additional_data || steps.setup-action.outputs.additional_data }}
   org_name_prefix:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.org_name_prefix || steps.account-request.outputs.org_name_prefix }}
   aws_region:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.aws_region || steps.account-request.outputs.aws_region }}
   requesting_team_name:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.requesting_team_name || steps.account-request.outputs.requesting_team_name }}
   account_baseline_modules_version:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.account_baseline_modules_version || steps.account-request.outputs.account_baseline_modules_version }}
   account_baseline_cis_service_catalog_version:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.account_baseline_cis_service_catalog_version || steps.account-request.outputs.account_baseline_cis_service_catalog_version }}
   create_vpc:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.create_vpc || steps.account-request.outputs.create_vpc }}
   tags:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.tags || steps.account-request.outputs.tags }}
   delegate_management:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.delegate_management || steps.account-request.outputs.delegate_management }}
   delegate_repo_name:
-    description: ''
+    description: ""
     value: ${{ steps.cache.outputs.delegate_repo_name || steps.account-request.outputs.delegate_repo_name }}
 runs:
   using: composite
@@ -134,7 +134,7 @@ runs:
     - name: Unpack and use cache
       id: cache
       shell: bash
-      if: inputs.cache != ""
+      if: ${{ inputs.cache != "" }}
       run: |
         echo "gruntwork_config=${{ fromJson(inputs.gruntwork_context).gruntwork_config }}" >> "$GITHUB_OUTPUT"
         echo "role_name=${{ fromJson(inputs.gruntwork_context).role_name }}" >> "$GITHUB_OUTPUT"
@@ -176,7 +176,7 @@ runs:
 
     - name: Setup Action
       id: setup-action
-      if: inputs.cache == ""
+      if: ${{ inputs.cache == "" }}
       shell: bash
       env:
         CHANGE_TYPE: ${{ inputs.change_type }}
@@ -216,7 +216,7 @@ runs:
           echo "terragrunt_command=$TERRAGRUNT_COMMAND" >> "$GITHUB_OUTPUT"
     - name: Read infra-pipelines' Gruntwork config file
       id: read_gruntwork_config
-      if: inputs.cache == ""
+      if: ${{ inputs.cache == "" }}
       shell: bash
       # Multi-line strings syntax https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
       run: |
@@ -230,7 +230,7 @@ runs:
         config=$(cat .gruntwork/config.yml)
     - name: Generate role session name
       id: generate_role_session_name
-      if: inputs.cache == ""
+      if: ${{ inputs.cache == "" }}
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
@@ -256,7 +256,7 @@ runs:
         echo "role_session_name=$SESSION_REQUESTER-via-GWPipelines@$SESSION_GIT_REF" >> $GITHUB_OUTPUT
     - name: Read infra-live's Gruntwork config file
       id: infraLive
-      if: inputs.cache == ""
+      if: ${{ inputs.cache == "" }}
       shell: bash
       run: |
         config=$(cat .gruntwork/config.yml)
@@ -295,7 +295,7 @@ runs:
         echo "terragrunt_version=$terragrunt_version" >> "$GITHUB_OUTPUT"
     - name: Get AWS role names for Pipelines
       id: get_role_name
-      if: inputs.cache == ""
+      if: ${{ inputs.cache == "" }}
       shell: bash
       env:
         TG_CMD: ${{ steps.setup-action.outputs.terragrunt_command }}
@@ -317,7 +317,7 @@ runs:
         echo "child_acct_role_name=$child_acct_role_name" >>$GITHUB_OUTPUT
     - name: Parse account IDs
       id: parse
-      if: steps.setup-action.outputs.workflow != 'terragrunt-executor.yml' && inputs.cache == ""
+      if: ${{ steps.setup-action.outputs.workflow != 'terragrunt-executor.yml' && inputs.cache == "" }}
       shell: bash
       run: |
         security_account_id="$(yq -r ".\"security\".id" "./accounts.yml")"
@@ -329,7 +329,7 @@ runs:
     - name: "Read and parse new account request"
       id: account-request
       shell: bash
-      if: inputs.cache == ""
+      if: ${{ inputs.cache == "" }}
       # Only try this if we've actually created the account
       env:
         NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
