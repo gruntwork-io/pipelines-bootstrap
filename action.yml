@@ -42,6 +42,9 @@ inputs:
   default_aws_region:
     description: "Where control tower is"
     required: true
+  access_control_repo:
+    description: "Name of the pipelines access control repo"
+    required: false
 
 outputs:
   gruntwork_config_file:
@@ -134,6 +137,10 @@ outputs:
   default_aws_region:
     description: ""
     value: ${{ steps.cache.outputs.default_aws_region || steps.setup-action.outputs.default_aws_region }}
+  access_control_repo:
+    description: ""
+    value: ${{ steps.cache.outputs.access_control_repo || steps.setup-action.outputs.access_control_repo }}
+
 runs:
   using: composite
   steps:
@@ -181,6 +188,8 @@ runs:
         echo "delegate_repo_name=${{ fromJson(inputs.cache).delegate_repo_name }}" >> "$GITHUB_OUTPUT"
 
         echo "default_aws_region=${{ fromJson(inputs.cache).default_aws_region }}" >> "$GITHUB_OUTPUT"
+        echo "access_control_repo=${{ fromJson(inputs.cache).access_control_repo }}" >> "$GITHUB_OUTPUT"
+
     - name: Setup Action
       id: setup-action
       if: ${{ inputs.cache == '' }}
@@ -196,6 +205,7 @@ runs:
         NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
         TEAM_ACCOUNT_NAMES: ${{ inputs.team_account_names }}
         DEFAULT_AWS_REGION: ${{ inputs.default_aws_region }}
+        ACCESS_CONTROL_REPO: ${{ inputs.access_control_repo }}
       run: |
         case $CHANGE_TYPE in
           "AccountRequested")
@@ -220,6 +230,7 @@ runs:
           echo "terragrunt_command=$TERRAGRUNT_COMMAND" >> "$GITHUB_OUTPUT"
           echo "gruntwork_config_file=$(pwd)/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
           echo "default_aws_region=$DEFAULT_AWS_REGION" >> "$GITHUB_OUTPUT"
+          echo "access_control_repo=$ACCESS_CONTROL_REPO" >> "$GITHUB_OUTPUT"
 
     - name: Generate role session name
       id: generate_role_session_name
