@@ -39,6 +39,9 @@ inputs:
   team_account_names:
     description: ""
     required: false
+  default_aws_region:
+    description: "Where control tower is"
+    required: true
 
 outputs:
   gruntwork_config_file:
@@ -128,6 +131,9 @@ outputs:
   delegate_repo_name:
     description: ""
     value: ${{ steps.cache.outputs.delegate_repo_name || steps.account-request.outputs.delegate_repo_name }}
+  default_aws_region:
+    description: ""
+    value: ${{ steps.cache.outputs.default_aws_region || steps.setup-action.outputs.default_aws_region }}
 runs:
   using: composite
   steps:
@@ -174,6 +180,7 @@ runs:
         echo "delegate_management=${{ fromJson(inputs.cache).delegate_management }}" >> "$GITHUB_OUTPUT"
         echo "delegate_repo_name=${{ fromJson(inputs.cache).delegate_repo_name }}" >> "$GITHUB_OUTPUT"
 
+        echo "default_aws_region=${{ fromJson(inputs.cache).default_aws_region }}" >> "$GITHUB_OUTPUT"
     - name: Setup Action
       id: setup-action
       if: ${{ inputs.cache == '' }}
@@ -188,6 +195,7 @@ runs:
         CHILD_ACCOUNT_ID: ${{ inputs.child_account_id }}
         NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
         TEAM_ACCOUNT_NAMES: ${{ inputs.team_account_names }}
+        DEFAULT_AWS_REGION: ${{ inputs.default_aws_region }}
       run: |
         case $CHANGE_TYPE in
           "AccountRequested")
@@ -215,6 +223,7 @@ runs:
           echo "working_directory=$WORKING_DIRECTORY" >> "$GITHUB_OUTPUT"
           echo "terragrunt_command=$TERRAGRUNT_COMMAND" >> "$GITHUB_OUTPUT"
           echo "gruntwork_config_file=$(pwd)/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
+          echo "default_aws_region=$DEFAULT_AWS_REGION" >> "$GITHUB_OUTPUT"
 
     - name: Generate role session name
       id: generate_role_session_name
