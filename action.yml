@@ -68,9 +68,9 @@ outputs:
   admins:
     description: "The list of GitHub users that are allowed to use admin functionality in workflows"
     value: ${{ steps.cache.outputs.admins || steps.get_pipelines_admins.outputs.admins }}
-  workflow:
-    description: "The type of workflow to run in this job"
-    value: ${{ steps.cache.outputs.workflow || steps.setup-action.outputs.workflow }}
+  action:
+    description: "The type of action to run in this job"
+    value: ${{ steps.cache.outputs.action || steps.setup-action.outputs.action }}
   child_account_id:
     description: "The child account id to assume from `account_id`"
     value: ${{ steps.cache.outputs.child_account_id || steps.setup-action.outputs.child_account_id }}
@@ -152,7 +152,7 @@ runs:
 
         echo "terragrunt_version=${{ fromJson(inputs.cache).terragrunt_version }}" >> "$GITHUB_OUTPUT"
         echo "admins=${{ fromJson(inputs.cache).admins }}" >> "$GITHUB_OUTPUT"
-        echo "workflow=${{ fromJson(inputs.cache).workflow }}" >> "$GITHUB_OUTPUT"
+        echo "action=${{ fromJson(inputs.cache).action }}" >> "$GITHUB_OUTPUT"
         echo "child_account_id=${{ fromJson(inputs.cache).child_account_id }}" >> "$GITHUB_OUTPUT"
         echo "account_id=${{ fromJson(inputs.cache).account_id }}" >> "$GITHUB_OUTPUT"
         echo "branch=${{ fromJson(inputs.cache).branch }}" >> "$GITHUB_OUTPUT"
@@ -199,22 +199,18 @@ runs:
       run: |
         case $CHANGE_TYPE in
           "AccountRequested")
-            echo "workflow=create-account-and-generate-baselines.yml" >> "$GITHUB_OUTPUT"
+            echo "action=PROVISION_ACCOUNT" >> "$GITHUB_OUTPUT"
             echo "new_account_name=$NEW_ACCOUNT_NAME" >> "$GITHUB_OUTPUT"
             ;;
           "AccountAdded")
-            echo "workflow=apply-new-account-baseline.yml" >> "$GITHUB_OUTPUT"
+            echo "action=BASELINE_ACCOUNT" >> "$GITHUB_OUTPUT"
             ;;
           "TeamAccountsRequested")
-            echo "workflow=create-sdlc-accounts-and-generate-baselines.yml" >> "$GITHUB_OUTPUT"
+            echo "action=PROVISION_ACCOUNT" >> "$GITHUB_OUTPUT"
             echo "team_account_names=$TEAM_ACCOUNT_NAMES" >> "$GITHUB_OUTPUT"
             ;;
-          "TeamAccountsAdded")
-            echo "workflow=apply-new-sdlc-accounts-baseline.yml" >> "$GITHUB_OUTPUT"
-            echo "additional_data=$ADDITIONAL_DATA" >> "$GITHUB_OUTPUT"
-            ;;
           *)
-            echo "workflow=terragrunt-executor.yml" >> "$GITHUB_OUTPUT"
+            echo "action=TERRAGRUNT_EXECUTE" >> "$GITHUB_OUTPUT"
             ;;
             esac
           echo "child_account_id=$CHILD_ACCOUNT_ID" >> "$GITHUB_OUTPUT"
@@ -314,7 +310,7 @@ runs:
         echo "child_acct_role_name=$child_acct_role_name" >>$GITHUB_OUTPUT
     - name: Parse account IDs
       id: parse
-      if: ${{ steps.setup-action.outputs.workflow != 'terragrunt-executor.yml' && inputs.cache == '' }}
+      if: ${{ steps.setup-action.outputs.action != 'TERRAGRUNT_EXECUTE' && inputs.cache == '' }}
       shell: bash
       run: |
         security_account_id="$(yq -r ".\"security\".id" "./accounts.yml")"
@@ -363,5 +359,5 @@ runs:
           echo "delegate_management=$delegate_management" >> "$GITHUB_OUTPUT"
           echo "delegate_repo_name=$delegate_repo_name" >> "$GITHUB_OUTPUT"
         else
-          echo "No file found at $request_file_path - must not be a new account request workflow"
+          echo "No file found at $request_file_path - must not be a new account request action"
         fi
