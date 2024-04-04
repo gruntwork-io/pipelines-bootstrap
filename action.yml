@@ -39,12 +39,6 @@ inputs:
   team_account_names:
     description: ""
     required: false
-  default_aws_region:
-    description: "Where control tower is"
-    required: true
-  access_control_repo:
-    description: "Name of the pipelines access control repo"
-    required: false
 
 outputs:
   gruntwork_config_file:
@@ -61,13 +55,16 @@ outputs:
     value: ${{ steps.cache.outputs.child_acct_role_name || steps.get_role_name.outputs.child_acct_role_name }}
   pipelines_cli_version:
     description: "The version of the pipelines CLI to use"
-    value: ${{ steps.cache.outputs.pipelines_cli_version || steps.infraLive.outputs.pipelines_cli_version }}
-  terraform_version:
+    value: ${{ steps.cache.outputs.pipelines_cli_version || steps.gruntwork_config.outputs.pipelines_cli_version }}
+  tofu_version:
     description: "The version of Terraform that Gruntwork Pipelines will use"
-    value: ${{ steps.cache.outputs.terraform_version || steps.infraLive.outputs.terraform_version }}
+    value: ${{ steps.cache.outputs.tofu_version || steps.gruntwork_config.outputs.tofu_version }}
   terragrunt_version:
     description: "The version of Terragrunt that Gruntwork Pipelines will use"
-    value: ${{ steps.cache.outputs.terragrunt_version || steps.infraLive.outputs.terragrunt_version }}
+    value: ${{ steps.cache.outputs.terragrunt_version || steps.gruntwork_config.outputs.terragrunt_version }}
+  tf_binary:
+    description: ""
+    value: ${{ steps.cache.outputs.tf_binary || steps.gruntwork_config.outputs.tf_binary }}
   admins:
     description: "The list of GitHub users that are allowed to use admin functionality in workflows"
     value: ${{ steps.cache.outputs.admins || steps.get_pipelines_admins.outputs.admins }}
@@ -133,13 +130,31 @@ outputs:
     value: ${{ steps.cache.outputs.delegate_management || steps.account-request.outputs.delegate_management }}
   delegate_repo_name:
     description: ""
-    value: ${{ steps.cache.outputs.delegate_repo_name || steps.account-request.outputs.delegate_repo_name }}
+    value: ${{ steps.cache.outputs.delegate_repo_name || steps.gruntwork_config.outputs.delegate_repo_name }}
+  deploy_branch_name:
+    description: ""
+    value: ${{ steps.cache.outputs.deploy_branch_name || steps.gruntwork_config.outputs.deploy_branch_name }}
+  gruntwork_installer_version:
+    description: ""
+    value: ${{ steps.cache.outputs.gruntwork_installer_version || steps.gruntwork_config.outputs.gruntwork_installer_version }}
+  module_security_version:
+    description: ""
+    value: ${{ steps.cache.outputs.module_security_version || steps.gruntwork_config.outputs.module_security_version }}
+  control_tower_modules_version:
+    description: ""
+    value: ${{ steps.cache.outputs.control_tower_modules_version || steps.gruntwork_config.outputs.control_tower_modules_version }}
+  boilerplate_version:
+    description: ""
+    value: ${{ steps.cache.outputs.boilerplate_version || steps.gruntwork_config.outputs.boilerplate_version }}
+  arch_catalog_version:
+    description: ""
+    value: ${{ steps.cache.outputs.arch_catalog_version || steps.gruntwork_config.outputs.arch_catalog_version }}
   default_aws_region:
     description: ""
-    value: ${{ steps.cache.outputs.default_aws_region || steps.setup-action.outputs.default_aws_region }}
+    value: ${{ steps.cache.outputs.default_aws_region || steps.gruntwork_config.outputs.default_aws_region }}
   access_control_repo:
     description: ""
-    value: ${{ steps.cache.outputs.access_control_repo || steps.setup-action.outputs.access_control_repo }}
+    value: ${{ steps.cache.outputs.access_control_repo || steps.gruntwork_config.outputs.access_control_repo }}
 
 runs:
   using: composite
@@ -154,7 +169,7 @@ runs:
         echo "role_session_name=${{ fromJson(inputs.cache).role_session_name }}" >> "$GITHUB_OUTPUT"
         echo "child_acct_role_name=${{ fromJson(inputs.cache).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
         echo "pipelines_cli_version=${{ fromJson(inputs.cache).pipelines_cli_version }}" >> "$GITHUB_OUTPUT"
-        echo "terraform_version=${{ fromJson(inputs.cache).terraform_version }}" >> "$GITHUB_OUTPUT"
+        echo "tofu_version=${{ fromJson(inputs.cache).tofu_version }}" >> "$GITHUB_OUTPUT"
 
 
         echo "terragrunt_version=${{ fromJson(inputs.cache).terragrunt_version }}" >> "$GITHUB_OUTPUT"
@@ -187,6 +202,12 @@ runs:
         echo "delegate_management=${{ fromJson(inputs.cache).delegate_management }}" >> "$GITHUB_OUTPUT"
         echo "delegate_repo_name=${{ fromJson(inputs.cache).delegate_repo_name }}" >> "$GITHUB_OUTPUT"
 
+        echo "deploy_branch_name=${{ fromJson(inputs.cache).deploy_branch_name }}" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_installer_version=${{ fromJson(inputs.cache).gruntwork_installer_version }}" >> "$GITHUB_OUTPUT"
+        echo "module_security_version=${{ fromJson(inputs.cache).module_security_version }}" >> "$GITHUB_OUTPUT"
+        echo "control_tower_modules_version=${{ fromJson(inputs.cache).control_tower_modules_version }}" >> "$GITHUB_OUTPUT"
+        echo "boilerplate_version=${{ fromJson(inputs.cache).boilerplate_version }}" >> "$GITHUB_OUTPUT"
+        echo "arch_catalog_version=${{ fromJson(inputs.cache).arch_catalog_version }}" >> "$GITHUB_OUTPUT"
         echo "default_aws_region=${{ fromJson(inputs.cache).default_aws_region }}" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=${{ fromJson(inputs.cache).access_control_repo }}" >> "$GITHUB_OUTPUT"
 
@@ -204,8 +225,6 @@ runs:
         CHILD_ACCOUNT_ID: ${{ inputs.child_account_id }}
         NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
         TEAM_ACCOUNT_NAMES: ${{ inputs.team_account_names }}
-        DEFAULT_AWS_REGION: ${{ inputs.default_aws_region }}
-        ACCESS_CONTROL_REPO: ${{ inputs.access_control_repo }}
       run: |
         case $CHANGE_TYPE in
           "AccountRequested")
@@ -229,8 +248,6 @@ runs:
           echo "working_directory=$WORKING_DIRECTORY" >> "$GITHUB_OUTPUT"
           echo "terragrunt_command=$TERRAGRUNT_COMMAND" >> "$GITHUB_OUTPUT"
           echo "gruntwork_config_file=$(pwd)/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
-          echo "default_aws_region=$DEFAULT_AWS_REGION" >> "$GITHUB_OUTPUT"
-          echo "access_control_repo=$ACCESS_CONTROL_REPO" >> "$GITHUB_OUTPUT"
 
     - name: Generate role session name
       id: generate_role_session_name
@@ -259,7 +276,7 @@ runs:
 
         echo "role_session_name=$SESSION_REQUESTER-via-GWPipelines@$SESSION_GIT_REF" >> $GITHUB_OUTPUT
     - name: Read infra-live's Gruntwork config file
-      id: infraLive
+      id: gruntwork_config
       if: ${{ inputs.cache == '' }}
       shell: bash
       run: |
@@ -284,8 +301,24 @@ runs:
         }
 
         pipelines_cli_version=$(get_pipelines_config "cli-version")
-        terraform_version=$(get_pipelines_config "terraform-version")
+        raw_terraform_version=$(get_pipelines_config "terraform-version")
+        raw_tofu_version=$(get_pipelines_config "tofu-version")
+
+        # Backwards compatibility with terraform-version in config.yaml
+        tofu_version=${raw_tofu_version:raw_terraform_version}
+
         terragrunt_version=$(get_pipelines_config "terragrunt-version")
+        tf_binary=$(get_pipelines_config "tf-binary")
+
+        deploy_branch_name=$(get_pipelines_config "deploy-branch-name")
+        gruntwork_installer_version=$(get_pipelines_config "gruntwork-installer-version")
+        module_security_version=$(get_pipelines_config "module-security-version")
+        control_tower_modules_version=$(get_pipelines_config "control-tower-modules-version")
+        boilerplate_version=$(get_pipelines_config "boilerplate-version")
+        arch_catalog_version=$(get_pipelines_config "arch-catalog-version")
+        default_aws_region=$(get_pipelines_config "default-aws-region")
+        access_control_repo=$(get_pipelines_config "access-control-repo")
+
 
         # Check if there are missing keys and error out if there are
         if [ ${#missing_keys[@]} -gt 0 ]; then
@@ -295,8 +328,19 @@ runs:
         fi
 
         echo "pipelines_cli_version=$pipelines_cli_version" >> "$GITHUB_OUTPUT"
-        echo "terraform_version=$terraform_version" >> "$GITHUB_OUTPUT"
+        echo "tofu_version=$tofu_version" >> "$GITHUB_OUTPUT"
         echo "terragrunt_version=$terragrunt_version" >> "$GITHUB_OUTPUT"
+        echo "tf_binary=$tf_binary" >> "$GITHUB_OUTPUT"
+
+        echo "deploy_branch_name=$deploy_branch_name" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_installer_version=$gruntwork_installer_version" >> "$GITHUB_OUTPUT"
+        echo "module_security_version=$module_security_version" >> "$GITHUB_OUTPUT"
+        echo "control_tower_modules_version=$control_tower_modules_version" >> "$GITHUB_OUTPUT"
+        echo "boilerplate_version=$boilerplate_version" >> "$GITHUB_OUTPUT"
+        echo "arch_catalog_version=$arch_catalog_version" >> "$GITHUB_OUTPUT"
+        echo "default_aws_region=$default_aws_region" >> "$GITHUB_OUTPUT"
+        echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
+
     - name: Get AWS role names for Pipelines
       id: get_role_name
       if: ${{ inputs.cache == '' }}
