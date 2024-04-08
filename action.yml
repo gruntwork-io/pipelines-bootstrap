@@ -170,7 +170,7 @@ runs:
         echo "child_acct_role_name=${{ fromJson(inputs.cache).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
         echo "pipelines_cli_version=${{ fromJson(inputs.cache).pipelines_cli_version }}" >> "$GITHUB_OUTPUT"
         echo "tofu_version=${{ fromJson(inputs.cache).tofu_version }}" >> "$GITHUB_OUTPUT"
-
+        echo "tf_binary=${{ fromJson(inputs.cache).tf_binary }}" >> "$GITHUB_OUTPUT
 
         echo "terragrunt_version=${{ fromJson(inputs.cache).terragrunt_version }}" >> "$GITHUB_OUTPUT"
         echo "admins=${{ fromJson(inputs.cache).admins }}" >> "$GITHUB_OUTPUT"
