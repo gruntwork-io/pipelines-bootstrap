@@ -163,53 +163,98 @@ runs:
       id: cache
       shell: bash
       if: ${{ inputs.cache != '' }}
+      env:
+        GRUNTWORK_CONFIG_FILE: ${{ toJson(fromJson(inputs.cache).gruntwork_config_file) }}
+        ROLE_NAME: ${{ fromJson(inputs.cache).role_name }}
+        ROLE_SESSION_NAME: ${{ fromJson(inputs.cache).role_session_name }}
+        CHILD_ACCT_ROLE_NAME: ${{ fromJson(inputs.cache).child_acct_role_name }}
+        PIPELINES_CLI_VERSION: ${{ fromJson(inputs.cache).pipelines_cli_version }}
+        TOFU_VERSION: ${{ fromJson(inputs.cache).tofu_version }}
+        TF_BINARY: ${{ fromJson(inputs.cache).tf_binary }}
+
+        TERRAGRUNT_VERSION: ${{ fromJson(inputs.cache).terragrunt_version }}
+        ADMINS: ${{ fromJson(inputs.cache).admins }}
+        ACTION: ${{ fromJson(inputs.cache).action }}
+        CHILD_ACCOUNT_ID: ${{ fromJson(inputs.cache).child_account_id }}
+        ACCOUNT_ID: ${{ fromJson(inputs.cache).account_id }}
+        BRANCH: ${{ fromJson(inputs.cache).branch }}
+
+        WORKING_DIRECTORY: ${{ fromJson(inputs.cache).working_directory }}
+        TERRAGRUNT_COMMAND: ${{ fromJson(inputs.cache).terragrunt_command }}
+        SECURITY_ACCOUNT_ID: ${{ fromJson(inputs.cache).security_account_id }}
+        SHARED_ACCOUNT_ID: ${{ fromJson(inputs.cache).shared_account_id }}
+        LOGS_ACCOUNT_ID: ${{ fromJson(inputs.cache).logs_account_id }}
+        TEAM_ACCOUNT_NAMES: ${{ fromJson(inputs.cache).team_account_names }}
+
+        NEW_ACCOUNT_NAME: ${{ fromJson(inputs.cache).new_account_name }}
+        ADDITIONAL_DATA: ${{ fromJson(inputs.cache).additional_data }}
+        ORG_NAME_PREFIX: ${{ fromJson(inputs.cache).org_name_prefix }}
+        AWS_REGION: ${{ fromJson(inputs.cache).aws_region }}
+        REQUESTING_TEAM_NAME: ${{ fromJson(inputs.cache).requesting_team_name }}
+        ACCOUNT_BASELINE_MODULES_VERSION: ${{ fromJson(inputs.cache).account_baseline_modules_version }}
+
+        ACCOUNT_BASELINE_CIS_SERVICE_CATALOG_VERSION: ${{ fromJson(inputs.cache).account_baseline_cis_service_catalog_version }}
+        CREATE_VPC: ${{ fromJson(inputs.cache).create_vpc }}
+        TAGS: ${{ fromJson(inputs.cache).tags }}
+        DELEGATE_MANAGEMENT: ${{ fromJson(inputs.cache).delegate_management }}
+        DELEGATE_REPO_NAME: ${{ fromJson(inputs.cache).delegate_repo_name }}
+
+        DEPLOY_BRANCH_NAME: ${{ fromJson(inputs.cache).deploy_branch_name }}
+        GRUNTWORK_INSTALLER_VERSION: ${{ fromJson(inputs.cache).gruntwork_installer_version }}
+        MODULE_SECURITY_VERSION: ${{ fromJson(inputs.cache).module_security_version }}
+        CONTROL_TOWER_MODULES_VERSION: ${{ fromJson(inputs.cache).control_tower_modules_version }}
+        BOILERPLATE_VERSION: ${{ fromJson(inputs.cache).boilerplate_version }}
+        ARCH_CATALOG_VERSION: ${{ fromJson(inputs.cache).arch_catalog_version }}
+        DEFAULT_AWS_REGION: ${{ fromJson(inputs.cache).default_aws_region }}
+        ACCESS_CONTROL_REPO: ${{ fromJson(inputs.cache).access_control_repo }}
       run: |
-        echo "gruntwork_config_file=${{ toJson(fromJson(inputs.cache).gruntwork_config_file) }}" >> "$GITHUB_OUTPUT"
-        echo "role_name=${{ fromJson(inputs.cache).role_name }}" >> "$GITHUB_OUTPUT"
-        echo "role_session_name=${{ fromJson(inputs.cache).role_session_name }}" >> "$GITHUB_OUTPUT"
-        echo "child_acct_role_name=${{ fromJson(inputs.cache).child_acct_role_name }}" >> "$GITHUB_OUTPUT"
-        echo "pipelines_cli_version=${{ fromJson(inputs.cache).pipelines_cli_version }}" >> "$GITHUB_OUTPUT"
-        echo "tofu_version=${{ fromJson(inputs.cache).tofu_version }}" >> "$GITHUB_OUTPUT"
-        echo "tf_binary=${{ fromJson(inputs.cache).tf_binary }}" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
+        echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
+        echo "role_session_name=${ROLE_SESSION_NAME}" >> "$GITHUB_OUTPUT"
+        echo "child_acct_role_name=${CHILD_ACCT_ROLE_NAME}" >> "$GITHUB_OUTPUT"
+        echo "pipelines_cli_version=${PIPELINES_CLI_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "tofu_version=${TOFU_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "tf_binary=${TF_BINARY}" >> "$GITHUB_OUTPUT"
 
-        echo "terragrunt_version=${{ fromJson(inputs.cache).terragrunt_version }}" >> "$GITHUB_OUTPUT"
-        echo "admins=${{ fromJson(inputs.cache).admins }}" >> "$GITHUB_OUTPUT"
-        echo "action=${{ fromJson(inputs.cache).action }}" >> "$GITHUB_OUTPUT"
-        echo "child_account_id=${{ fromJson(inputs.cache).child_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "account_id=${{ fromJson(inputs.cache).account_id }}" >> "$GITHUB_OUTPUT"
-        echo "branch=${{ fromJson(inputs.cache).branch }}" >> "$GITHUB_OUTPUT"
+        echo "terragrunt_version=${TERRAGRUNT_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "admins=${ADMINS}" >> "$GITHUB_OUTPUT"
+        echo "action=${ACTION}" >> "$GITHUB_OUTPUT"
+        echo "child_account_id=${CHILD_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
+        echo "account_id=${ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
+        echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
 
+        echo "working_directory=${WORKING_DIRECTORY}" >> "$GITHUB_OUTPUT"
 
-        echo "working_directory=${{ fromJson(inputs.cache).working_directory }}" >> "$GITHUB_OUTPUT"
-        echo "terragrunt_command=${{ fromJson(inputs.cache).terragrunt_command }}" >> "$GITHUB_OUTPUT"
-        echo "security_account_id=${{ fromJson(inputs.cache).security_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "shared_account_id=${{ fromJson(inputs.cache).shared_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "logs_account_id=${{ fromJson(inputs.cache).logs_account_id }}" >> "$GITHUB_OUTPUT"
-        echo "team_account_names=${{ fromJson(inputs.cache).team_account_names }}" >> "$GITHUB_OUTPUT"
+        # Remove any whitespace from the terragrunt command that might be there because there are no arguments
+        trimmed_terragrunt_command=$(tr -d '[:space:]' <<< "$TERRAGRUNT_COMMAND")
+        echo "terragrunt_command=${trimmed_terragrunt_command}" >> "$GITHUB_OUTPUT"
 
+        echo "security_account_id=${SECURITY_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
+        echo "shared_account_id=${SHARED_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
+        echo "logs_account_id=${LOGS_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
+        echo "team_account_names=${TEAM_ACCOUNT_NAMES}" >> "$GITHUB_OUTPUT"
 
-        echo "new_account_name=${{ fromJson(inputs.cache).new_account_name }}" >> "$GITHUB_OUTPUT"
-        echo "additional_data=${{ fromJson(inputs.cache).additional_data }}" >> "$GITHUB_OUTPUT"
-        echo "org_name_prefix=${{ fromJson(inputs.cache).org_name_prefix }}" >> "$GITHUB_OUTPUT"
-        echo "aws_region=${{ fromJson(inputs.cache).aws_region }}" >> "$GITHUB_OUTPUT"
-        echo "requesting_team_name=${{ fromJson(inputs.cache).requesting_team_name }}" >> "$GITHUB_OUTPUT"
-        echo "account_baseline_modules_version=${{ fromJson(inputs.cache).account_baseline_modules_version }}" >> "$GITHUB_OUTPUT"
+        echo "new_account_name=${NEW_ACCOUNT_NAME}" >> "$GITHUB_OUTPUT"
+        echo "additional_data=${ADDITIONAL_DATA}" >> "$GITHUB_OUTPUT"
+        echo "org_name_prefix=${ORG_NAME_PREFIX}" >> "$GITHUB_OUTPUT"
+        echo "aws_region=${AWS_REGION}" >> "$GITHUB_OUTPUT"
+        echo "requesting_team_name=${REQUESTING_TEAM_NAME}" >> "$GITHUB_OUTPUT"
+        echo "account_baseline_modules_version=${ACCOUNT_BASELINE_MODULES_VERSION}" >> "$GITHUB_OUTPUT"
 
+        echo "account_baseline_cis_service_catalog_version=${ACCOUNT_BASELINE_CIS_SERVICE_CATALOG_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "create_vpc=${CREATE_VPC}" >> "$GITHUB_OUTPUT"
+        echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+        echo "delegate_management=${DELEGATE_MANAGEMENT}" >> "$GITHUB_OUTPUT"
+        echo "delegate_repo_name=${DELEGATE_REPO_NAME}" >> "$GITHUB_OUTPUT"
 
-        echo "account_baseline_cis_service_catalog_version=${{ fromJson(inputs.cache).account_baseline_cis_service_catalog_version }}" >> "$GITHUB_OUTPUT"
-        echo "create_vpc=${{ fromJson(inputs.cache).create_vpc }}" >> "$GITHUB_OUTPUT"
-        echo "tags=${{ fromJson(inputs.cache).tags }}" >> "$GITHUB_OUTPUT"
-        echo "delegate_management=${{ fromJson(inputs.cache).delegate_management }}" >> "$GITHUB_OUTPUT"
-        echo "delegate_repo_name=${{ fromJson(inputs.cache).delegate_repo_name }}" >> "$GITHUB_OUTPUT"
-
-        echo "deploy_branch_name=${{ fromJson(inputs.cache).deploy_branch_name }}" >> "$GITHUB_OUTPUT"
-        echo "gruntwork_installer_version=${{ fromJson(inputs.cache).gruntwork_installer_version }}" >> "$GITHUB_OUTPUT"
-        echo "module_security_version=${{ fromJson(inputs.cache).module_security_version }}" >> "$GITHUB_OUTPUT"
-        echo "control_tower_modules_version=${{ fromJson(inputs.cache).control_tower_modules_version }}" >> "$GITHUB_OUTPUT"
-        echo "boilerplate_version=${{ fromJson(inputs.cache).boilerplate_version }}" >> "$GITHUB_OUTPUT"
-        echo "arch_catalog_version=${{ fromJson(inputs.cache).arch_catalog_version }}" >> "$GITHUB_OUTPUT"
-        echo "default_aws_region=${{ fromJson(inputs.cache).default_aws_region }}" >> "$GITHUB_OUTPUT"
-        echo "access_control_repo=${{ fromJson(inputs.cache).access_control_repo }}" >> "$GITHUB_OUTPUT"
+        echo "deploy_branch_name=${DEPLOY_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_installer_version=${GRUNTWORK_INSTALLER_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "module_security_version=${MODULE_SECURITY_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "control_tower_modules_version=${CONTROL_TOWER_MODULES_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "boilerplate_version=${BOILERPLATE_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "arch_catalog_version=${ARCH_CATALOG_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "default_aws_region=${DEFAULT_AWS_REGION}" >> "$GITHUB_OUTPUT"
+        echo "access_control_repo=${ACCESS_CONTROL_REPO}" >> "$GITHUB_OUTPUT"
 
     - name: Setup Action
       id: setup-action
@@ -246,8 +291,12 @@ runs:
           echo "account_id=$ACCOUNT_ID" >> "$GITHUB_OUTPUT"
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           echo "working_directory=$WORKING_DIRECTORY" >> "$GITHUB_OUTPUT"
-          echo "terragrunt_command=$TERRAGRUNT_COMMAND" >> "$GITHUB_OUTPUT"
-          echo "gruntwork_config_file=$(pwd)/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
+
+          # Remove any whitespace from the terragrunt command that might be there because there are no arguments
+          trimmed_terragrunt_command=$(tr -d '[:space:]' <<< "$TERRAGRUNT_COMMAND")
+          echo "terragrunt_command=${trimmed_terragrunt_command}" >> "$GITHUB_OUTPUT"
+
+          echo "gruntwork_config_file=${PWD}/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
 
     - name: Generate role session name
       id: generate_role_session_name
