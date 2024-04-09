@@ -33,10 +33,7 @@ inputs:
   child_account_id:
     description: ""
     required: false
-  new_account_name:
-    description: ""
-    required: false
-  team_account_names:
+  account_names:
     description: ""
     required: false
 
@@ -181,7 +178,7 @@ runs:
         SECURITY_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').security_account_id }}
         SHARED_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').shared_account_id }}
         LOGS_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').logs_account_id }}
-        TEAM_ACCOUNT_NAMES: ${{ fromJson(inputs.cache || '{}').team_account_names }}
+        ACCOUNT_NAMES: ${{ fromJson(inputs.cache || '{}').account_names }}
 
         NEW_ACCOUNT_NAME: ${{ fromJson(inputs.cache || '{}').new_account_name }}
         ADDITIONAL_DATA: ${{ fromJson(inputs.cache || '{}').additional_data }}
@@ -229,9 +226,8 @@ runs:
         echo "security_account_id=${SECURITY_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
         echo "shared_account_id=${SHARED_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
         echo "logs_account_id=${LOGS_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
-        echo "team_account_names=${TEAM_ACCOUNT_NAMES}" >> "$GITHUB_OUTPUT"
+        echo "account_names=${ACCOUNT_NAMES}" >> "$GITHUB_OUTPUT"
 
-        echo "new_account_name=${NEW_ACCOUNT_NAME}" >> "$GITHUB_OUTPUT"
         echo "additional_data=${ADDITIONAL_DATA}" >> "$GITHUB_OUTPUT"
         echo "org_name_prefix=${ORG_NAME_PREFIX}" >> "$GITHUB_OUTPUT"
         echo "aws_region=${AWS_REGION}" >> "$GITHUB_OUTPUT"
