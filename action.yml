@@ -164,49 +164,49 @@ runs:
       shell: bash
       if: ${{ inputs.cache != '' }}
       env:
-        GRUNTWORK_CONFIG_FILE: ${{ toJson(fromJson(inputs.cache).gruntwork_config_file) }}
-        ROLE_NAME: ${{ fromJson(inputs.cache).role_name }}
-        ROLE_SESSION_NAME: ${{ fromJson(inputs.cache).role_session_name }}
-        CHILD_ACCT_ROLE_NAME: ${{ fromJson(inputs.cache).child_acct_role_name }}
-        PIPELINES_CLI_VERSION: ${{ fromJson(inputs.cache).pipelines_cli_version }}
-        TOFU_VERSION: ${{ fromJson(inputs.cache).tofu_version }}
-        TF_BINARY: ${{ fromJson(inputs.cache).tf_binary }}
+        GRUNTWORK_CONFIG_FILE: ${{ toJson(fromJson(inputs.cache || '{}').gruntwork_config_file) }}
+        ROLE_NAME: ${{ fromJson(inputs.cache || '{}').role_name }}
+        ROLE_SESSION_NAME: ${{ fromJson(inputs.cache || '{}').role_session_name }}
+        CHILD_ACCT_ROLE_NAME: ${{ fromJson(inputs.cache || '{}').child_acct_role_name }}
+        PIPELINES_CLI_VERSION: ${{ fromJson(inputs.cache || '{}').pipelines_cli_version }}
+        TOFU_VERSION: ${{ fromJson(inputs.cache || '{}').tofu_version }}
+        TF_BINARY: ${{ fromJson(inputs.cache || '{}').tf_binary }}
 
-        TERRAGRUNT_VERSION: ${{ fromJson(inputs.cache).terragrunt_version }}
-        ADMINS: ${{ fromJson(inputs.cache).admins }}
-        ACTION: ${{ fromJson(inputs.cache).action }}
-        CHILD_ACCOUNT_ID: ${{ fromJson(inputs.cache).child_account_id }}
-        ACCOUNT_ID: ${{ fromJson(inputs.cache).account_id }}
-        BRANCH: ${{ fromJson(inputs.cache).branch }}
+        TERRAGRUNT_VERSION: ${{ fromJson(inputs.cache || '{}').terragrunt_version }}
+        ADMINS: ${{ fromJson(inputs.cache || '{}').admins }}
+        ACTION: ${{ fromJson(inputs.cache || '{}').action }}
+        CHILD_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').child_account_id }}
+        ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').account_id }}
+        BRANCH: ${{ fromJson(inputs.cache || '{}').branch }}
 
-        WORKING_DIRECTORY: ${{ fromJson(inputs.cache).working_directory }}
-        TERRAGRUNT_COMMAND: ${{ fromJson(inputs.cache).terragrunt_command }}
-        SECURITY_ACCOUNT_ID: ${{ fromJson(inputs.cache).security_account_id }}
-        SHARED_ACCOUNT_ID: ${{ fromJson(inputs.cache).shared_account_id }}
-        LOGS_ACCOUNT_ID: ${{ fromJson(inputs.cache).logs_account_id }}
-        TEAM_ACCOUNT_NAMES: ${{ fromJson(inputs.cache).team_account_names }}
+        WORKING_DIRECTORY: ${{ fromJson(inputs.cache || '{}').working_directory }}
+        TERRAGRUNT_COMMAND: ${{ fromJson(inputs.cache || '{}').terragrunt_command }}
+        SECURITY_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').security_account_id }}
+        SHARED_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').shared_account_id }}
+        LOGS_ACCOUNT_ID: ${{ fromJson(inputs.cache || '{}').logs_account_id }}
+        TEAM_ACCOUNT_NAMES: ${{ fromJson(inputs.cache || '{}').team_account_names }}
 
-        NEW_ACCOUNT_NAME: ${{ fromJson(inputs.cache).new_account_name }}
-        ADDITIONAL_DATA: ${{ fromJson(inputs.cache).additional_data }}
-        ORG_NAME_PREFIX: ${{ fromJson(inputs.cache).org_name_prefix }}
-        AWS_REGION: ${{ fromJson(inputs.cache).aws_region }}
-        REQUESTING_TEAM_NAME: ${{ fromJson(inputs.cache).requesting_team_name }}
-        ACCOUNT_BASELINE_MODULES_VERSION: ${{ fromJson(inputs.cache).account_baseline_modules_version }}
+        NEW_ACCOUNT_NAME: ${{ fromJson(inputs.cache || '{}').new_account_name }}
+        ADDITIONAL_DATA: ${{ fromJson(inputs.cache || '{}').additional_data }}
+        ORG_NAME_PREFIX: ${{ fromJson(inputs.cache || '{}').org_name_prefix }}
+        AWS_REGION: ${{ fromJson(inputs.cache || '{}').aws_region }}
+        REQUESTING_TEAM_NAME: ${{ fromJson(inputs.cache || '{}').requesting_team_name }}
+        ACCOUNT_BASELINE_MODULES_VERSION: ${{ fromJson(inputs.cache || '{}').account_baseline_modules_version }}
 
-        ACCOUNT_BASELINE_CIS_SERVICE_CATALOG_VERSION: ${{ fromJson(inputs.cache).account_baseline_cis_service_catalog_version }}
-        CREATE_VPC: ${{ fromJson(inputs.cache).create_vpc }}
-        TAGS: ${{ fromJson(inputs.cache).tags }}
-        DELEGATE_MANAGEMENT: ${{ fromJson(inputs.cache).delegate_management }}
-        DELEGATE_REPO_NAME: ${{ fromJson(inputs.cache).delegate_repo_name }}
+        ACCOUNT_BASELINE_CIS_SERVICE_CATALOG_VERSION: ${{ fromJson(inputs.cache || '{}').account_baseline_cis_service_catalog_version }}
+        CREATE_VPC: ${{ fromJson(inputs.cache || '{}').create_vpc }}
+        TAGS: ${{ fromJson(inputs.cache || '{}').tags }}
+        DELEGATE_MANAGEMENT: ${{ fromJson(inputs.cache || '{}').delegate_management }}
+        DELEGATE_REPO_NAME: ${{ fromJson(inputs.cache || '{}').delegate_repo_name }}
 
-        DEPLOY_BRANCH_NAME: ${{ fromJson(inputs.cache).deploy_branch_name }}
-        GRUNTWORK_INSTALLER_VERSION: ${{ fromJson(inputs.cache).gruntwork_installer_version }}
-        MODULE_SECURITY_VERSION: ${{ fromJson(inputs.cache).module_security_version }}
-        CONTROL_TOWER_MODULES_VERSION: ${{ fromJson(inputs.cache).control_tower_modules_version }}
-        BOILERPLATE_VERSION: ${{ fromJson(inputs.cache).boilerplate_version }}
-        ARCH_CATALOG_VERSION: ${{ fromJson(inputs.cache).arch_catalog_version }}
-        DEFAULT_AWS_REGION: ${{ fromJson(inputs.cache).default_aws_region }}
-        ACCESS_CONTROL_REPO: ${{ fromJson(inputs.cache).access_control_repo }}
+        DEPLOY_BRANCH_NAME: ${{ fromJson(inputs.cache || '{}').deploy_branch_name }}
+        GRUNTWORK_INSTALLER_VERSION: ${{ fromJson(inputs.cache || '{}').gruntwork_installer_version }}
+        MODULE_SECURITY_VERSION: ${{ fromJson(inputs.cache || '{}').module_security_version }}
+        CONTROL_TOWER_MODULES_VERSION: ${{ fromJson(inputs.cache || '{}').control_tower_modules_version }}
+        BOILERPLATE_VERSION: ${{ fromJson(inputs.cache || '{}').boilerplate_version }}
+        ARCH_CATALOG_VERSION: ${{ fromJson(inputs.cache || '{}').arch_catalog_version }}
+        DEFAULT_AWS_REGION: ${{ fromJson(inputs.cache || '{}').default_aws_region }}
+        ACCESS_CONTROL_REPO: ${{ fromJson(inputs.cache || '{}').access_control_repo }}
       run: |
         echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
