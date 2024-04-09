@@ -95,12 +95,9 @@ outputs:
   logs_account_id:
     description: "AWS Account ID of the Logs Account"
     value: ${{ steps.cache.outputs.logs_account_id || steps.parse.outputs.logs_account_id }}
-  team_account_names:
+  account_names:
     description: ""
-    value: ${{ steps.cache.outputs.team_account_names || steps.setup-action.outputs.team_account_names }}
-  new_account_name:
-    description: ""
-    value: ${{ steps.cache.outputs.new_account_name || steps.setup-action.outputs.new_account_name }}
+    value: ${{ steps.cache.outputs.account_names || steps.setup-action.outputs.account_names }}
   additional_data:
     description: ""
     value: ${{ steps.cache.outputs.additional_data || steps.setup-action.outputs.additional_data }}
@@ -268,20 +265,15 @@ runs:
         TERRAGRUNT_COMMAND: ${{ inputs.terragrunt_command }}
         ADDITIONAL_DATA: ${{ inputs.additional_data }}
         CHILD_ACCOUNT_ID: ${{ inputs.child_account_id }}
-        NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
-        TEAM_ACCOUNT_NAMES: ${{ inputs.team_account_names }}
+        ACCOUNT_NAMES: ${{ inputs.account_names }}
       run: |
         case $CHANGE_TYPE in
-          "AccountRequested")
+          "AccountsRequested")
             echo "action=PROVISION_ACCOUNT" >> "$GITHUB_OUTPUT"
-            echo "new_account_name=$NEW_ACCOUNT_NAME" >> "$GITHUB_OUTPUT"
+            echo "account_names=$ACCOUNT_NAMES" >> "$GITHUB_OUTPUT"
             ;;
-          "AccountAdded")
+          "AccountsAdded")
             echo "action=BASELINE_ACCOUNT" >> "$GITHUB_OUTPUT"
-            ;;
-          "TeamAccountsRequested")
-            echo "action=PROVISION_ACCOUNT" >> "$GITHUB_OUTPUT"
-            echo "team_account_names=$TEAM_ACCOUNT_NAMES" >> "$GITHUB_OUTPUT"
             ;;
           *)
             echo "action=TERRAGRUNT_EXECUTE" >> "$GITHUB_OUTPUT"
