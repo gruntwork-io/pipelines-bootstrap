@@ -220,7 +220,7 @@ runs:
         echo "working_directory=${WORKING_DIRECTORY}" >> "$GITHUB_OUTPUT"
 
         # Remove any whitespace from the terragrunt command that might be there because there are no arguments
-        trimmed_terragrunt_command=$(tr -d '[:space:]' <<< "$TERRAGRUNT_COMMAND")
+        trimmed_terragrunt_command=$(awk '{$1=$1;print}' <<< "$TERRAGRUNT_COMMAND")
         echo "terragrunt_command=${trimmed_terragrunt_command}" >> "$GITHUB_OUTPUT"
 
         echo "security_account_id=${SECURITY_ACCOUNT_ID}" >> "$GITHUB_OUTPUT"
@@ -281,7 +281,7 @@ runs:
           echo "working_directory=$WORKING_DIRECTORY" >> "$GITHUB_OUTPUT"
 
           # Remove any whitespace from the terragrunt command that might be there because there are no arguments
-          trimmed_terragrunt_command=$(tr -d '[:space:]' <<< "$TERRAGRUNT_COMMAND")
+          trimmed_terragrunt_command=$(awk '{$1=$1;print}' <<< "$TERRAGRUNT_COMMAND")
           echo "terragrunt_command=${trimmed_terragrunt_command}" >> "$GITHUB_OUTPUT"
 
           echo "gruntwork_config_file=${PWD}/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
