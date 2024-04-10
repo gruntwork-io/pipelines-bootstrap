@@ -155,6 +155,9 @@ outputs:
   ci_readonly_user:
     description: ""
     value: ${{ steps.cache.outputs.ci_readonly_user || steps.gruntwork_config.outputs.ci_readonly_user }}
+  github_org:
+    description: ""
+    value: ${{ steps.cache.outputs.github_org || steps.gruntwork_config.outputs.github_org }}
 runs:
   using: composite
   steps:
@@ -208,6 +211,7 @@ runs:
         ACCESS_CONTROL_REPO: ${{ fromJson(inputs.cache || '{}').access_control_repo }}
 
         CI_READONLY_USER: ${{ fromJson(inputs.cache || '{}').ci_readonly_user }}
+        GITHUB_ORG: ${{ fromJson(inputs.cache || '{}').github_org }}
       run: |
         echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
@@ -256,7 +260,8 @@ runs:
         echo "default_aws_region=${DEFAULT_AWS_REGION}" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=${ACCESS_CONTROL_REPO}" >> "$GITHUB_OUTPUT"
 
-        echo "ci_readonly_user=${ci_readonly_user}" >> "$GITHUB_OUTPUT"
+        echo "ci_readonly_user=${CI_READONLY_USER}" >> "$GITHUB_OUTPUT"
+        echo "github_org=${GITHUB_ORG}" >> "$GITHUB_OUTPUT"
 
     - name: Setup Action
       id: setup-action
@@ -366,6 +371,7 @@ runs:
         access_control_repo=$(get_pipelines_config "access-control-repo")
 
         ci_readonly_user=$(get_pipelines_config "ci_readonly_user")
+        github_org=$(get_pipelines_config "github_org")
 
         # Check if there are missing keys and error out if there are
         if [ ${#missing_keys[@]} -gt 0 ]; then
@@ -388,6 +394,7 @@ runs:
         echo "default_aws_region=$default_aws_region" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
         echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
+        echo "github_org=$github_org" >> "$GITHUB_OUTPUT"
 
     - name: Get AWS role names for Pipelines
       id: get_role_name
