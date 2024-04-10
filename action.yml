@@ -152,7 +152,9 @@ outputs:
   access_control_repo:
     description: ""
     value: ${{ steps.cache.outputs.access_control_repo || steps.gruntwork_config.outputs.access_control_repo }}
-
+  ci_readonly_user:
+    description: ""
+    value: ${{ steps.cache.outputs.ci_readonly_user || steps.gruntwork_config.outputs.ci_readonly_user }}
 runs:
   using: composite
   steps:
@@ -204,6 +206,8 @@ runs:
         ARCH_CATALOG_VERSION: ${{ fromJson(inputs.cache || '{}').arch_catalog_version }}
         DEFAULT_AWS_REGION: ${{ fromJson(inputs.cache || '{}').default_aws_region }}
         ACCESS_CONTROL_REPO: ${{ fromJson(inputs.cache || '{}').access_control_repo }}
+
+        CI_READONLY_USER: ${{ fromJson(inputs.cache || '{}').ci_readonly_user }}
       run: |
         echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
@@ -251,6 +255,8 @@ runs:
         echo "arch_catalog_version=${ARCH_CATALOG_VERSION}" >> "$GITHUB_OUTPUT"
         echo "default_aws_region=${DEFAULT_AWS_REGION}" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=${ACCESS_CONTROL_REPO}" >> "$GITHUB_OUTPUT"
+
+        echo "ci_readonly_user=${ci_readonly_user}" >> "$GITHUB_OUTPUT"
 
     - name: Setup Action
       id: setup-action
@@ -359,6 +365,7 @@ runs:
         default_aws_region=$(get_pipelines_config "default-aws-region")
         access_control_repo=$(get_pipelines_config "access-control-repo")
 
+        ci_readonly_user=$(get_pipelines_config "ci_readonly_user")
 
         # Check if there are missing keys and error out if there are
         if [ ${#missing_keys[@]} -gt 0 ]; then
@@ -380,6 +387,7 @@ runs:
         echo "arch_catalog_version=$arch_catalog_version" >> "$GITHUB_OUTPUT"
         echo "default_aws_region=$default_aws_region" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
+        echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
 
     - name: Get AWS role names for Pipelines
       id: get_role_name
