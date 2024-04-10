@@ -127,7 +127,7 @@ outputs:
     value: ${{ steps.cache.outputs.delegate_management || steps.account-request.outputs.delegate_management }}
   delegate_repo_name:
     description: ""
-    value: ${{ steps.cache.outputs.delegate_repo_name || steps.gruntwork_config.outputs.delegate_repo_name }}
+    value: ${{ steps.cache.outputs.delegate_repo_name || steps.account-request.outputs.delegate_repo_name }}
   deploy_branch_name:
     description: ""
     value: ${{ steps.cache.outputs.deploy_branch_name || steps.gruntwork_config.outputs.deploy_branch_name }}
