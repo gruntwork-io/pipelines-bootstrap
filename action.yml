@@ -36,6 +36,9 @@ inputs:
   account_names:
     description: ""
     required: false
+  new_account_name:
+    description: "account name used in the filename of the new account request"
+    required: false
 
 outputs:
   gruntwork_config_file:
