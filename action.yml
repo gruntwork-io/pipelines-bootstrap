@@ -211,7 +211,7 @@ runs:
         echo "child_acct_role_name=${CHILD_ACCT_ROLE_NAME}" >> "$GITHUB_OUTPUT"
         echo "pipelines_cli_version=${PIPELINES_CLI_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tofu_version=${TOFU_VERSION}" >> "$GITHUB_OUTPUT"
-        echo "tf_binary=${TF_BINARY}" >> "$GITHUB_OUTPUT"
+        echo "tf_binary=${TF_BINARY:-opentofu}" >> "$GITHUB_OUTPUT"
 
         echo "terragrunt_version=${TERRAGRUNT_VERSION}" >> "$GITHUB_OUTPUT"
         echo "admins=${ADMINS}" >> "$GITHUB_OUTPUT"
