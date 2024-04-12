@@ -155,6 +155,13 @@ outputs:
   github_org:
     description: ""
     value: ${{ steps.cache.outputs.github_org || steps.gruntwork_config.outputs.github_org }}
+  infra_modules_repo_name:
+    description: ""
+    value: ${{ steps.cache.outputs.infra_modules_repo_name || steps.gruntwork_config.outputs.infra_modules_repo_name }}
+  infra_modules_release_version:
+    description: ""
+    value: ${{ steps.cache.outputs.infra_modules_release_version || steps.gruntwork_config.outputs.infra_modules_release_version }}
+
 runs:
   using: composite
   steps:
@@ -208,6 +215,10 @@ runs:
 
         CI_READONLY_USER: ${{ fromJson(inputs.cache || '{}').ci_readonly_user }}
         GITHUB_ORG: ${{ fromJson(inputs.cache || '{}').github_org }}
+
+        INFRA_MODULES_REPO_NAME: ${{ fromJson(inputs.cache || '{}').infra_modules_repo_name }}
+        INFRA_MODULES_RELEASE_VERSION:  ${{ fromJson(inputs.cache || '{}').infra_modules_release_version }}
+
       run: |
         echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
@@ -257,6 +268,9 @@ runs:
 
         echo "ci_readonly_user=${CI_READONLY_USER}" >> "$GITHUB_OUTPUT"
         echo "github_org=${GITHUB_ORG}" >> "$GITHUB_OUTPUT"
+
+        echo "infra_modules_repo_name=${INFRA_MODULES_REPO_NAME}" >> "$GITHUB_OUTPUT"
+        echo "infra_modules_release_version=${INFRA_MODULES_RELEASE_VERSION}" >> "$GITHUB_OUTPUT"
 
     - name: Setup Action
       id: setup-action
@@ -387,6 +401,9 @@ runs:
         ci_readonly_user=$(get_pipelines_config "ci_readonly_user")
         github_org=$(get_pipelines_config "github_org")
 
+        infra_modules_repo_name=$(get_pipelines_config "infra-modules-repo-name")
+        infra_modules_release_version=$(get_pipelines_config "infra-modules-release-version")
+
         # Check if there are missing keys and error out if there are
         if [ ${#missing_keys[@]} -gt 0 ]; then
           missing_keys_str=$(IFS=,; printf "%s" "${missing_keys[*]}")
@@ -409,6 +426,8 @@ runs:
         echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
         echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
         echo "github_org=$github_org" >> "$GITHUB_OUTPUT"
+        echo "infra_modules_repo_name=$infra_modules_repo_name" >> "$GITHUB_OUTPUT"
+        echo "infra_modules_release_version=$infra_modules_release_version" >> "$GITHUB_OUTPUT"
 
     - name: Get AWS role names for Pipelines
       id: get_role_name
