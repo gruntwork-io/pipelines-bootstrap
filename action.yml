@@ -50,9 +50,6 @@ outputs:
   role_session_name:
     description: "The AWS Session name"
     value: ${{ steps.cache.outputs.role_session_name || steps.generate_role_session_name.outputs.role_session_name }}
-  child_acct_role_name:
-    description: "The AWS role to assume"
-    value: ${{ steps.cache.outputs.child_acct_role_name || steps.get_role_name.outputs.child_acct_role_name }}
   pipelines_cli_version:
     description: "The version of the pipelines CLI to use"
     value: ${{ steps.cache.outputs.pipelines_cli_version || steps.gruntwork_config.outputs.pipelines_cli_version }}
@@ -169,7 +166,6 @@ runs:
         GRUNTWORK_CONFIG_FILE: ${{ toJson(fromJson(inputs.cache || '{}').gruntwork_config_file) }}
         ROLE_NAME: ${{ fromJson(inputs.cache || '{}').role_name }}
         ROLE_SESSION_NAME: ${{ fromJson(inputs.cache || '{}').role_session_name }}
-        CHILD_ACCT_ROLE_NAME: ${{ fromJson(inputs.cache || '{}').child_acct_role_name }}
         PIPELINES_CLI_VERSION: ${{ fromJson(inputs.cache || '{}').pipelines_cli_version }}
         TOFU_VERSION: ${{ fromJson(inputs.cache || '{}').tofu_version }}
         TF_BINARY: ${{ fromJson(inputs.cache || '{}').tf_binary }}
@@ -216,7 +212,6 @@ runs:
         echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
         echo "role_session_name=${ROLE_SESSION_NAME}" >> "$GITHUB_OUTPUT"
-        echo "child_acct_role_name=${CHILD_ACCT_ROLE_NAME}" >> "$GITHUB_OUTPUT"
         echo "pipelines_cli_version=${PIPELINES_CLI_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tofu_version=${TOFU_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tf_binary=${TF_BINARY:-opentofu}" >> "$GITHUB_OUTPUT"
@@ -298,7 +293,24 @@ runs:
           trimmed_terragrunt_command=$(awk '{$1=$1;print}' <<< "$TERRAGRUNT_COMMAND")
           echo "terragrunt_command=${trimmed_terragrunt_command}" >> "$GITHUB_OUTPUT"
 
-          echo "gruntwork_config_file=${PWD}/.gruntwork/config.yml" >> "$GITHUB_OUTPUT"
+          gruntwork_config_file="${PWD}/.gruntwork/config.yml"
+          echo "gruntwork_config_file=$gruntwork_config_file" >> "$GITHUB_OUTPUT"
+
+          is_delegated_repo="$(yq -r '.is-delegated-repo // false' "$gruntwork_config_file")"
+          echo "is_delegated_repo=$is_delegated_repo" >> "$GITHUB_OUTPUT"
+
+          is_access_control_repo="$(yq -r '.is-access-control-repo // false' "$gruntwork_config_file")"
+          echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
+
+          role_prefix='central'
+
+          if [[ $is_delegated_repo == 'true' ]]; then
+            role_prefix='delegated'
+          fi
+
+          if [[ $is_access_control_repo == 'true' ]]; then
+            role_prefix='access-control'
+          fi
 
     - name: Generate role session name
       id: generate_role_session_name
@@ -405,10 +417,8 @@ runs:
         ROLE_PREFIX: ${{ steps.setup-action.outputs.role_prefix }}
       run: |
         role_suffix="pipelines-plan"
-        child_acct_role_name="pipelines-policy-plan-update"
         if ! [[ ${TG_CMD} =~ ^(plan|run-all plan) ]]; then
           role_suffix="pipelines-apply"
-          child_acct_role_name="pipelines-policy-apply-update"
         fi
 
         role_name="$ROLE_PREFIX-$role_suffix"
@@ -417,7 +427,6 @@ runs:
         fi
 
         echo "role_name=$role_name" >>$GITHUB_OUTPUT
-        echo "child_acct_role_name=$child_acct_role_name" >>$GITHUB_OUTPUT
     - name: Parse account IDs
       id: parse
       if: ${{ steps.setup-action.outputs.action != 'TERRAGRUNT_EXECUTE' && inputs.cache == '' }}
