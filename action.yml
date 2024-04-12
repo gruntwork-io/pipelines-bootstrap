@@ -296,10 +296,10 @@ runs:
           gruntwork_config_file="${PWD}/.gruntwork/config.yml"
           echo "gruntwork_config_file=$gruntwork_config_file" >> "$GITHUB_OUTPUT"
 
-          is_delegated_repo="$(yq -r '.is-delegated-repo // false' "$gruntwork_config_file")"
+          is_delegated_repo="$(yq -r '.pipelines.is-delegated-repo // false' "$gruntwork_config_file")"
           echo "is_delegated_repo=$is_delegated_repo" >> "$GITHUB_OUTPUT"
 
-          is_access_control_repo="$(yq -r '.is-access-control-repo // false' "$gruntwork_config_file")"
+          is_access_control_repo="$(yq -r '.pipelines.is-access-control-repo // false' "$gruntwork_config_file")"
           echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
 
           role_prefix='central'
