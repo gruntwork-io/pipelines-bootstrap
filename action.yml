@@ -312,6 +312,8 @@ runs:
             role_prefix='access-control'
           fi
 
+          echo "role_prefix=$role_prefix" >> "$GITHUB_OUTPUT"
+
     - name: Generate role session name
       id: generate_role_session_name
       if: ${{ inputs.cache == '' }}
