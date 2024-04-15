@@ -399,6 +399,7 @@ runs:
       shell: bash
       env:
         ACCOUNT_TYPE: ${{ steps.account-request.outputs.account_type }}
+        NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
       run: |
         config=$(cat .gruntwork/config.yml)
 
@@ -490,8 +491,10 @@ runs:
         infra_modules_repo_name=$(get_pipelines_config "infra-modules-repo-name")
         infra_modules_release_version=$(get_pipelines_config "infra-modules-release-version")
 
-        catalog_repositories="$(get_pipelines_config_as_json_w_default "account-vending.$ACCOUNT_TYPE.catalog-repositories" "[]")"
-        github_collaborators="$(get_pipelines_config_as_json_w_default "account-vending.$ACCOUNT_TYPE.github-collaborators" "[]")"
+        if [[ -n "$NEW_ACCOUNT_NAME" ]]; then
+          catalog_repositories="$(get_pipelines_config_as_json_w_default "account-vending.$ACCOUNT_TYPE.catalog-repositories" "[]")"
+          github_collaborators="$(get_pipelines_config_as_json_w_default "account-vending.$ACCOUNT_TYPE.github-collaborators" "[]")"
+        fi
 
         # Check if there are missing keys and error out if there are
         if [ ${#missing_keys[@]} -gt 0 ]; then
@@ -522,8 +525,10 @@ runs:
         echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
         echo "role_prefix=$role_prefix" >> "$GITHUB_OUTPUT"
 
-        echo "catalog_repositories=$catalog_repositories" >> "$GITHUB_OUTPUT"
-        echo "github_collaborators=$github_collaborators" >> "$GITHUB_OUTPUT"
+        if [[ -n "$NEW_ACCOUNT_NAME" ]]; then
+          echo "catalog_repositories=$catalog_repositories" >> "$GITHUB_OUTPUT"
+          echo "github_collaborators=$github_collaborators" >> "$GITHUB_OUTPUT"
+        fi
 
     - name: Get AWS role names for Pipelines
       id: get_role_name
