@@ -161,6 +161,12 @@ outputs:
   infra_modules_release_version:
     description: ""
     value: ${{ steps.cache.outputs.infra_modules_release_version || steps.gruntwork_config.outputs.infra_modules_release_version }}
+  catalog_repositories:
+    description: ""
+    value: ${{ steps.cache.outputs.catalog_repositories || steps.gruntwork_config.outputs.catalog_repositories }}
+  github_collaborators:
+    description: ""
+    value: ${{ steps.cache.outputs.github_collaborators || steps.gruntwork_config.outputs.github_collaborators }}
 
 runs:
   using: composite
@@ -219,6 +225,8 @@ runs:
         INFRA_MODULES_REPO_NAME: ${{ fromJson(inputs.cache || '{}').infra_modules_repo_name }}
         INFRA_MODULES_RELEASE_VERSION:  ${{ fromJson(inputs.cache || '{}').infra_modules_release_version }}
 
+        CATALOG_REPOSITORIES: ${{ fromJson(inputs.cache || '{}').catalog_repositories }}
+        GITHUB_COLLABORATORS: ${{ fromJson(inputs.cache || '{}').github_collaborators }}
       run: |
         echo "gruntwork_config_file=${GRUNTWORK_CONFIG_FILE}" >> "$GITHUB_OUTPUT"
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
@@ -272,6 +280,9 @@ runs:
         echo "infra_modules_repo_name=${INFRA_MODULES_REPO_NAME}" >> "$GITHUB_OUTPUT"
         echo "infra_modules_release_version=${INFRA_MODULES_RELEASE_VERSION}" >> "$GITHUB_OUTPUT"
 
+        echo "catalog_repositories=${CATALOG_REPOSITORIES}" >> "$GITHUB_OUTPUT"
+        echo "github_collaborators=${GITHUB_COLLABORATORS}" >> "$GITHUB_OUTPUT"
+
     - name: Setup Action
       id: setup-action
       if: ${{ inputs.cache == '' }}
@@ -310,26 +321,6 @@ runs:
           gruntwork_config_file="${PWD}/.gruntwork/config.yml"
           echo "gruntwork_config_file=$gruntwork_config_file" >> "$GITHUB_OUTPUT"
 
-          is_delegated_repo="$(yq -r '.pipelines.is-delegated-repo // false' "$gruntwork_config_file")"
-          echo "is_delegated_repo=$is_delegated_repo" >> "$GITHUB_OUTPUT"
-
-          is_access_control_repo="$(yq -r '.pipelines.is-access-control-repo // false' "$gruntwork_config_file")"
-          echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
-
-          gh_ci_ro_user="$(yq -r '.pipelines.ci_readonly_user' "$gruntwork_config_file")"
-
-          role_prefix='central'
-
-          if [[ $is_delegated_repo == 'true' ]]; then
-            role_prefix='delegated'
-          fi
-
-          if [[ $is_access_control_repo == 'true' ]]; then
-            role_prefix='access-control'
-          fi
-
-          echo "role_prefix=$role_prefix" >> "$GITHUB_OUTPUT"
-
     - name: Generate role session name
       id: generate_role_session_name
       if: ${{ inputs.cache == '' }}
@@ -356,107 +347,7 @@ runs:
         fi
 
         echo "role_session_name=$SESSION_REQUESTER-via-GWPipelines@$SESSION_GIT_REF" >> $GITHUB_OUTPUT
-    - name: Read infra-live's Gruntwork config file
-      id: gruntwork_config
-      if: ${{ inputs.cache == '' }}
-      shell: bash
-      run: |
-        config=$(cat .gruntwork/config.yml)
 
-        # Initialize an array to store missing keys
-        missing_keys=()
-
-        get_pipelines_config() {
-          local key=$1
-          local yaml_key
-          local value
-
-          yaml_key=".pipelines.$key"
-          value=$(echo "$config" | yq "$yaml_key")
-
-          if [[ "$value" == "null" ]]; then
-            missing_keys+=("$yaml_key")
-          else
-            echo "$value"
-          fi
-        }
-
-        pipelines_cli_version=$(get_pipelines_config "cli-version")
-        raw_terraform_version=$(get_pipelines_config "terraform-version")
-        raw_tofu_version=$(get_pipelines_config "tofu-version")
-
-        # Backwards compatibility with terraform-version in config.yaml
-        tofu_version=${raw_tofu_version:raw_terraform_version}
-
-        terragrunt_version=$(get_pipelines_config "terragrunt-version")
-        tf_binary=$(get_pipelines_config "tf-binary")
-
-        deploy_branch_name=$(get_pipelines_config "deploy-branch-name")
-        gruntwork_installer_version=$(get_pipelines_config "gruntwork-installer-version")
-        module_security_version=$(get_pipelines_config "module-security-version")
-        control_tower_modules_version=$(get_pipelines_config "control-tower-modules-version")
-        boilerplate_version=$(get_pipelines_config "boilerplate-version")
-        arch_catalog_version=$(get_pipelines_config "arch-catalog-version")
-        default_aws_region=$(get_pipelines_config "default-aws-region")
-        access_control_repo=$(get_pipelines_config "access-control-repo")
-
-        ci_readonly_user=$(get_pipelines_config "ci-readonly-user")
-        github_org=$(get_pipelines_config "github_org")
-
-        infra_modules_repo_name=$(get_pipelines_config "infra-modules-repo-name")
-        infra_modules_release_version=$(get_pipelines_config "infra-modules-release-version")
-
-        # Check if there are missing keys and error out if there are
-        if [ ${#missing_keys[@]} -gt 0 ]; then
-          missing_keys_str=$(IFS=,; printf "%s" "${missing_keys[*]}")
-          echo "Error: The following keys do not exist in the YAML content: $missing_keys_str"
-          exit 1
-        fi
-
-        echo "pipelines_cli_version=$pipelines_cli_version" >> "$GITHUB_OUTPUT"
-        echo "tofu_version=$tofu_version" >> "$GITHUB_OUTPUT"
-        echo "terragrunt_version=$terragrunt_version" >> "$GITHUB_OUTPUT"
-        echo "tf_binary=$tf_binary" >> "$GITHUB_OUTPUT"
-
-        echo "deploy_branch_name=$deploy_branch_name" >> "$GITHUB_OUTPUT"
-        echo "gruntwork_installer_version=$gruntwork_installer_version" >> "$GITHUB_OUTPUT"
-        echo "module_security_version=$module_security_version" >> "$GITHUB_OUTPUT"
-        echo "control_tower_modules_version=$control_tower_modules_version" >> "$GITHUB_OUTPUT"
-        echo "boilerplate_version=$boilerplate_version" >> "$GITHUB_OUTPUT"
-        echo "arch_catalog_version=$arch_catalog_version" >> "$GITHUB_OUTPUT"
-        echo "default_aws_region=$default_aws_region" >> "$GITHUB_OUTPUT"
-        echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
-        echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
-        echo "github_org=$github_org" >> "$GITHUB_OUTPUT"
-        echo "infra_modules_repo_name=$infra_modules_repo_name" >> "$GITHUB_OUTPUT"
-        echo "infra_modules_release_version=$infra_modules_release_version" >> "$GITHUB_OUTPUT"
-
-    - name: Get AWS role names for Pipelines
-      id: get_role_name
-      if: ${{ inputs.cache == '' }}
-      shell: bash
-      env:
-        TG_CMD: ${{ steps.setup-action.outputs.terragrunt_command }}
-        ROLE_PREFIX: ${{ steps.setup-action.outputs.role_prefix }}
-      run: |
-        role_suffix="pipelines-plan"
-        if ! [[ ${TG_CMD} =~ ^(plan|run-all plan) ]]; then
-          role_suffix="pipelines-apply"
-        fi
-
-        role_name="$ROLE_PREFIX-$role_suffix"
-        echo "role_name=$role_name" >>$GITHUB_OUTPUT
-    - name: Parse account IDs
-      id: parse
-      if: ${{ steps.setup-action.outputs.action != 'TERRAGRUNT_EXECUTE' && inputs.cache == '' }}
-      shell: bash
-      run: |
-        security_account_id="$(yq -r ".\"security\".id" "./accounts.yml")"
-        echo "security_account_id=$security_account_id" >> $GITHUB_OUTPUT
-        shared_account_id="$(yq -r ".\"shared\".id" "./accounts.yml")"
-        echo "shared_account_id=$shared_account_id" >> $GITHUB_OUTPUT
-        logs_account_id="$(yq -r ".\"logs\".id" "./accounts.yml")"
-        echo "logs_account_id=$logs_account_id" >> $GITHUB_OUTPUT
     - name: "Read and parse new account request"
       id: account-request
       shell: bash
@@ -486,6 +377,7 @@ runs:
 
           delegate_management="$(yq -r '.delegate_management // false' "$request_file_path")"
           delegate_repo_name="$(yq -r '.delegate_repo_name // ""' "$request_file_path")"
+          account_type="$(yq -r '.account_type // ""' "$request_file_path")"
 
           echo "org_name_prefix=$org_name_prefix" >> "$GITHUB_OUTPUT"
           echo "aws_region=$aws_region" >> "$GITHUB_OUTPUT"
@@ -496,6 +388,167 @@ runs:
           echo "tags=$tags" >> "$GITHUB_OUTPUT"
           echo "delegate_management=$delegate_management" >> "$GITHUB_OUTPUT"
           echo "delegate_repo_name=$delegate_repo_name" >> "$GITHUB_OUTPUT"
+          echo "account_type=$account_type" >> "$GITHUB_OUTPUT"
         else
           echo "No file found at $request_file_path - must not be a new account request action"
         fi
+
+    - name: Read infra-live's Gruntwork config file
+      id: gruntwork_config
+      if: ${{ inputs.cache == '' }}
+      shell: bash
+      env:
+        ACCOUNT_TYPE: ${{ steps.account-request.outputs.account_type }}
+      run: |
+        config=$(cat .gruntwork/config.yml)
+
+        # Initialize an array to store missing keys
+        missing_keys=()
+
+        get_pipelines_config() {
+          local key=$1
+          local yaml_key
+          local value
+
+          yaml_key=".pipelines.$key"
+          value=$(echo "$config" | yq "$yaml_key")
+
+          if [[ "$value" == "null" ]]; then
+            missing_keys+=("$yaml_key")
+          else
+            echo "$value"
+          fi
+        }
+
+        get_pipelines_config_w_default() {
+          local key=$1
+          local default=$2
+          local yaml_key
+          local value
+
+          yaml_key=".pipelines.$key"
+          value=$(echo "$config" | yq "$yaml_key")
+
+          if [[ "$value" == "null" ]]; then
+            echo "$default"
+          else
+            echo "$value"
+          fi
+        }
+
+        get_pipelines_config_as_json_w_default() {
+          local key=$1
+          local default=$2
+          local yaml_key
+          local value
+
+          yaml_key=".pipelines.$key"
+          value=$(echo "$config" | yq -o=json -I=0 "$yaml_key")
+
+          if [[ "$value" == "null" ]]; then
+            echo "$default"
+          else
+            echo "$value"
+          fi
+        }
+
+        pipelines_cli_version=$(get_pipelines_config "cli-version")
+        raw_terraform_version=$(get_pipelines_config "terraform-version")
+        raw_tofu_version=$(get_pipelines_config "tofu-version")
+
+        # Backwards compatibility with terraform-version in config.yaml
+        tofu_version=${raw_tofu_version:raw_terraform_version}
+
+        terragrunt_version=$(get_pipelines_config "terragrunt-version")
+        tf_binary=$(get_pipelines_config "tf-binary")
+
+        deploy_branch_name=$(get_pipelines_config "deploy-branch-name")
+        gruntwork_installer_version=$(get_pipelines_config "gruntwork-installer-version")
+        module_security_version=$(get_pipelines_config "module-security-version")
+        control_tower_modules_version=$(get_pipelines_config "control-tower-modules-version")
+        boilerplate_version=$(get_pipelines_config "boilerplate-version")
+        arch_catalog_version=$(get_pipelines_config "arch-catalog-version")
+        default_aws_region=$(get_pipelines_config "default-aws-region")
+        access_control_repo=$(get_pipelines_config "access-control-repo")
+
+        ci_readonly_user=$(get_pipelines_config "ci-readonly-user")
+        github_org=$(get_pipelines_config "github-org")
+
+        is_delegated_repo=$(get_pipelines_config_w_default "is-delegated-repo" 'false')
+        is_access_control_repo=$(get_pipelines_config_w_default "is-access-control-repo" 'false')
+
+        role_prefix='central'
+
+        if [[ $is_delegated_repo == 'true' ]]; then
+          role_prefix='delegated'
+        fi
+
+        if [[ $is_access_control_repo == 'true' ]]; then
+          role_prefix='access-control'
+        fi
+
+        infra_modules_repo_name=$(get_pipelines_config "infra-modules-repo-name")
+        infra_modules_release_version=$(get_pipelines_config "infra-modules-release-version")
+
+        catalog_repositories="$(get_pipelines_config_as_json_w_default ".account-vending.$ACCOUNT_TYPE.catalog-repositories" "[]")"
+        github_collaborators="$(get_pipelines_config_as_json_w_default ".account-vending.$ACCOUNT_TYPE.github-collaborators" "[]")"
+
+        # Check if there are missing keys and error out if there are
+        if [ ${#missing_keys[@]} -gt 0 ]; then
+          missing_keys_str=$(IFS=,; printf "%s" "${missing_keys[*]}")
+          echo "Error: The following keys do not exist in the YAML content: $missing_keys_str"
+          exit 1
+        fi
+
+        echo "pipelines_cli_version=$pipelines_cli_version" >> "$GITHUB_OUTPUT"
+        echo "tofu_version=$tofu_version" >> "$GITHUB_OUTPUT"
+        echo "terragrunt_version=$terragrunt_version" >> "$GITHUB_OUTPUT"
+        echo "tf_binary=$tf_binary" >> "$GITHUB_OUTPUT"
+
+        echo "deploy_branch_name=$deploy_branch_name" >> "$GITHUB_OUTPUT"
+        echo "gruntwork_installer_version=$gruntwork_installer_version" >> "$GITHUB_OUTPUT"
+        echo "module_security_version=$module_security_version" >> "$GITHUB_OUTPUT"
+        echo "control_tower_modules_version=$control_tower_modules_version" >> "$GITHUB_OUTPUT"
+        echo "boilerplate_version=$boilerplate_version" >> "$GITHUB_OUTPUT"
+        echo "arch_catalog_version=$arch_catalog_version" >> "$GITHUB_OUTPUT"
+        echo "default_aws_region=$default_aws_region" >> "$GITHUB_OUTPUT"
+        echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
+        echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
+        echo "github_org=$github_org" >> "$GITHUB_OUTPUT"
+        echo "infra_modules_repo_name=$infra_modules_repo_name" >> "$GITHUB_OUTPUT"
+        echo "infra_modules_release_version=$infra_modules_release_version" >> "$GITHUB_OUTPUT"a
+
+        echo "is_delegated_repo=$is_delegated_repo" >> "$GITHUB_OUTPUT"
+        echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
+        echo "role_prefix=$role_prefix" >> "$GITHUB_OUTPUT"
+
+        echo "catalog_repositories=$catalog_repositories" >> "$GITHUB_OUTPUT"
+        echo "github_collaborators=$github_collaborators" >> "$GITHUB_OUTPUT"
+
+    - name: Get AWS role names for Pipelines
+      id: get_role_name
+      if: ${{ inputs.cache == '' }}
+      shell: bash
+      env:
+        TG_CMD: ${{ steps.setup-action.outputs.terragrunt_command }}
+        ROLE_PREFIX: ${{ steps.setup-action.outputs.role_prefix }}
+      run: |
+        role_suffix="pipelines-plan"
+        if ! [[ ${TG_CMD} =~ ^(plan|run-all plan) ]]; then
+          role_suffix="pipelines-apply"
+        fi
+
+        role_name="$ROLE_PREFIX-$role_suffix"
+        echo "role_name=$role_name" >>$GITHUB_OUTPUT
+
+    - name: Parse account IDs
+      id: parse
+      if: ${{ steps.setup-action.outputs.action != 'TERRAGRUNT_EXECUTE' && inputs.cache == '' }}
+      shell: bash
+      run: |
+        security_account_id="$(yq -r ".\"security\".id" "./accounts.yml")"
+        echo "security_account_id=$security_account_id" >> $GITHUB_OUTPUT
+        shared_account_id="$(yq -r ".\"shared\".id" "./accounts.yml")"
+        echo "shared_account_id=$shared_account_id" >> $GITHUB_OUTPUT
+        logs_account_id="$(yq -r ".\"logs\".id" "./accounts.yml")"
+        echo "logs_account_id=$logs_account_id" >> $GITHUB_OUTPUT
