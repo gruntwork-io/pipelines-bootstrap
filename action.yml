@@ -519,7 +519,7 @@ runs:
         echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
         echo "github_org=$github_org" >> "$GITHUB_OUTPUT"
         echo "infra_modules_repo_name=$infra_modules_repo_name" >> "$GITHUB_OUTPUT"
-        echo "infra_modules_release_version=$infra_modules_release_version" >> "$GITHUB_OUTPUT"a
+        echo "infra_modules_release_version=$infra_modules_release_version" >> "$GITHUB_OUTPUT"
 
         echo "is_delegated_repo=$is_delegated_repo" >> "$GITHUB_OUTPUT"
         echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
