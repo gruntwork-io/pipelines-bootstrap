@@ -43,7 +43,7 @@ inputs:
 outputs:
   gruntwork_config_file:
     description: "Absolute path to the .gruntwork/config.yml"
-    value: ${{ steps.cache.outputs.gruntwork_config_file || steps.setup-action.outputs.gruntwork_config_file }}
+    value: ${{ steps.cache.outputs.gruntwork_config_file || steps.setup_action.outputs.gruntwork_config_file }}
   role_name:
     description: "The AWS role to assume"
     value: ${{ steps.cache.outputs.role_name || steps.get_role_name.outputs.role_name }}
@@ -67,22 +67,22 @@ outputs:
     value: ${{ steps.cache.outputs.admins || steps.get_pipelines_admins.outputs.admins }}
   action:
     description: "The type of action to run in this job"
-    value: ${{ steps.cache.outputs.action || steps.setup-action.outputs.action }}
+    value: ${{ steps.cache.outputs.action || steps.setup_action.outputs.action }}
   child_account_id:
     description: "The child account id to assume from `account_id`"
-    value: ${{ steps.cache.outputs.child_account_id || steps.setup-action.outputs.child_account_id }}
+    value: ${{ steps.cache.outputs.child_account_id || steps.setup_action.outputs.child_account_id }}
   account_id:
     description: "The management account Id to use"
-    value: ${{ steps.cache.outputs.account_id || steps.setup-action.outputs.account_id }}
+    value: ${{ steps.cache.outputs.account_id || steps.setup_action.outputs.account_id }}
   branch:
     description: "The branch we're operating on"
-    value: ${{ steps.cache.outputs.branch || steps.setup-action.outputs.branch }}
+    value: ${{ steps.cache.outputs.branch || steps.setup_action.outputs.branch }}
   working_directory:
     description: "Where to run terragrunt"
-    value: ${{ steps.cache.outputs.working_directory || steps.setup-action.outputs.working_directory }}
+    value: ${{ steps.cache.outputs.working_directory || steps.setup_action.outputs.working_directory }}
   terragrunt_command:
     description: "Terragrunt command to run e.g. plan/apply"
-    value: ${{ steps.cache.outputs.terragrunt_command || steps.setup-action.outputs.terragrunt_command }}
+    value: ${{ steps.cache.outputs.terragrunt_command || steps.setup_action.outputs.terragrunt_command }}
   security_account_id:
     description: "AWS Account ID of the Security Account"
     value: ${{ steps.cache.outputs.security_account_id || steps.parse.outputs.security_account_id }}
@@ -94,37 +94,37 @@ outputs:
     value: ${{ steps.cache.outputs.logs_account_id || steps.parse.outputs.logs_account_id }}
   account_names:
     description: ""
-    value: ${{ steps.cache.outputs.account_names || steps.setup-action.outputs.account_names }}
+    value: ${{ steps.cache.outputs.account_names || steps.setup_action.outputs.account_names }}
   additional_data:
     description: ""
-    value: ${{ steps.cache.outputs.additional_data || steps.setup-action.outputs.additional_data }}
+    value: ${{ steps.cache.outputs.additional_data || steps.setup_action.outputs.additional_data }}
   org_name_prefix:
     description: ""
-    value: ${{ steps.cache.outputs.org_name_prefix || steps.account-request.outputs.org_name_prefix }}
+    value: ${{ steps.cache.outputs.org_name_prefix || steps.account_request.outputs.org_name_prefix }}
   aws_region:
     description: ""
-    value: ${{ steps.cache.outputs.aws_region || steps.account-request.outputs.aws_region }}
+    value: ${{ steps.cache.outputs.aws_region || steps.account_request.outputs.aws_region }}
   requesting_team_name:
     description: ""
-    value: ${{ steps.cache.outputs.requesting_team_name || steps.account-request.outputs.requesting_team_name }}
+    value: ${{ steps.cache.outputs.requesting_team_name || steps.account_request.outputs.requesting_team_name }}
   account_baseline_modules_version:
     description: ""
-    value: ${{ steps.cache.outputs.account_baseline_modules_version || steps.account-request.outputs.account_baseline_modules_version }}
+    value: ${{ steps.cache.outputs.account_baseline_modules_version || steps.account_request.outputs.account_baseline_modules_version }}
   account_baseline_cis_service_catalog_version:
     description: ""
-    value: ${{ steps.cache.outputs.account_baseline_cis_service_catalog_version || steps.account-request.outputs.account_baseline_cis_service_catalog_version }}
+    value: ${{ steps.cache.outputs.account_baseline_cis_service_catalog_version || steps.account_request.outputs.account_baseline_cis_service_catalog_version }}
   create_vpc:
     description: ""
-    value: ${{ steps.cache.outputs.create_vpc || steps.account-request.outputs.create_vpc }}
+    value: ${{ steps.cache.outputs.create_vpc || steps.account_request.outputs.create_vpc }}
   tags:
     description: ""
-    value: ${{ steps.cache.outputs.tags || steps.account-request.outputs.tags }}
+    value: ${{ steps.cache.outputs.tags || steps.account_request.outputs.tags }}
   delegate_management:
     description: ""
-    value: ${{ steps.cache.outputs.delegate_management || steps.account-request.outputs.delegate_management }}
+    value: ${{ steps.cache.outputs.delegate_management || steps.account_request.outputs.delegate_management }}
   delegate_repo_name:
     description: ""
-    value: ${{ steps.cache.outputs.delegate_repo_name || steps.account-request.outputs.delegate_repo_name }}
+    value: ${{ steps.cache.outputs.delegate_repo_name || steps.account_request.outputs.delegate_repo_name }}
   deploy_branch_name:
     description: ""
     value: ${{ steps.cache.outputs.deploy_branch_name || steps.gruntwork_config.outputs.deploy_branch_name }}
@@ -284,7 +284,7 @@ runs:
         echo "github_collaborators=${GITHUB_COLLABORATORS}" >> "$GITHUB_OUTPUT"
 
     - name: Setup Action
-      id: setup-action
+      id: setup_action
       if: ${{ inputs.cache == '' }}
       shell: bash
       env:
@@ -327,8 +327,8 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
-        COMMIT_SHA: ${{ steps.setup-action.outputs.branch }}
-        TG_CMD: ${{ steps.setup-action.outputs.terragrunt_command }}
+        COMMIT_SHA: ${{ steps.setup_action.outputs.branch }}
+        TG_CMD: ${{ steps.setup_action.outputs.terragrunt_command }}
       run: |
         if [[ $TG_CMD =~ ^(plan|run-all plan) ]]; then
           PR_SEARCH=$(gh pr list --search $COMMIT_SHA --json author --json mergedBy --json number --json baseRefName --json commits)
@@ -349,7 +349,7 @@ runs:
         echo "role_session_name=$SESSION_REQUESTER-via-GWPipelines@$SESSION_GIT_REF" >> $GITHUB_OUTPUT
 
     - name: "Read and parse new account request"
-      id: account-request
+      id: account_request
       shell: bash
       if: ${{ inputs.cache == '' && inputs.new_account_name != ''}}
       # Only try this if we've actually created the account
@@ -398,7 +398,7 @@ runs:
       if: ${{ inputs.cache == '' }}
       shell: bash
       env:
-        ACCOUNT_TYPE: ${{ steps.account-request.outputs.account_type }}
+        ACCOUNT_TYPE: ${{ steps.account_request.outputs.account_type }}
         NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
       run: |
         config=$(cat .gruntwork/config.yml)
@@ -535,7 +535,7 @@ runs:
       if: ${{ inputs.cache == '' }}
       shell: bash
       env:
-        TG_CMD: ${{ steps.gruntwork_config.outputs.terragrunt_command }}
+        TG_CMD: ${{ steps.setup_action.outputs.terragrunt_command }}
         ROLE_PREFIX: ${{ steps.gruntwork_config.outputs.role_prefix }}
       run: |
         role_suffix="pipelines-plan"
@@ -548,7 +548,7 @@ runs:
 
     - name: Parse account IDs
       id: parse
-      if: ${{ steps.setup-action.outputs.action != 'TERRAGRUNT_EXECUTE' && inputs.cache == '' }}
+      if: ${{ steps.setup_action.outputs.action != 'TERRAGRUNT_EXECUTE' && inputs.cache == '' }}
       shell: bash
       run: |
         security_account_id="$(yq -r ".\"security\".id" "./accounts.yml")"
