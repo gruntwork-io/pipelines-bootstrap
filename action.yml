@@ -490,8 +490,8 @@ runs:
         infra_modules_repo_name=$(get_pipelines_config "infra-modules-repo-name")
         infra_modules_release_version=$(get_pipelines_config "infra-modules-release-version")
 
-        catalog_repositories="$(get_pipelines_config_as_json_w_default ".account-vending.$ACCOUNT_TYPE.catalog-repositories" "[]")"
-        github_collaborators="$(get_pipelines_config_as_json_w_default ".account-vending.$ACCOUNT_TYPE.github-collaborators" "[]")"
+        catalog_repositories="$(get_pipelines_config_as_json_w_default "account-vending.$ACCOUNT_TYPE.catalog-repositories" "[]")"
+        github_collaborators="$(get_pipelines_config_as_json_w_default "account-vending.$ACCOUNT_TYPE.github-collaborators" "[]")"
 
         # Check if there are missing keys and error out if there are
         if [ ${#missing_keys[@]} -gt 0 ]; then
