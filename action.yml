@@ -351,7 +351,7 @@ runs:
     - name: "Read and parse new account request"
       id: account-request
       shell: bash
-      if: ${{ inputs.cache == '' }}
+      if: ${{ inputs.cache == '' && inputs.new_account_name != ''}}
       # Only try this if we've actually created the account
       env:
         NEW_ACCOUNT_NAME: ${{ inputs.new_account_name }}
