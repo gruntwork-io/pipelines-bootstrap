@@ -316,6 +316,8 @@ runs:
           is_access_control_repo="$(yq -r '.pipelines.is-access-control-repo // false' "$gruntwork_config_file")"
           echo "is_access_control_repo=$is_access_control_repo" >> "$GITHUB_OUTPUT"
 
+          gh_ci_ro_user="$(yq -r '.pipelines.ci_readonly_user' "$gruntwork_config_file")"
+
           role_prefix='central'
 
           if [[ $is_delegated_repo == 'true' ]]; then
@@ -398,7 +400,7 @@ runs:
         default_aws_region=$(get_pipelines_config "default-aws-region")
         access_control_repo=$(get_pipelines_config "access-control-repo")
 
-        ci_readonly_user=$(get_pipelines_config "ci_readonly_user")
+        ci_readonly_user=$(get_pipelines_config "ci-readonly-user")
         github_org=$(get_pipelines_config "github_org")
 
         infra_modules_repo_name=$(get_pipelines_config "infra-modules-repo-name")
