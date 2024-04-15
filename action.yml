@@ -535,8 +535,8 @@ runs:
       if: ${{ inputs.cache == '' }}
       shell: bash
       env:
-        TG_CMD: ${{ steps.setup-action.outputs.terragrunt_command }}
-        ROLE_PREFIX: ${{ steps.setup-action.outputs.role_prefix }}
+        TG_CMD: ${{ steps.gruntwork_config.outputs.terragrunt_command }}
+        ROLE_PREFIX: ${{ steps.gruntwork_config.outputs.role_prefix }}
       run: |
         role_suffix="pipelines-plan"
         if ! [[ ${TG_CMD} =~ ^(plan|run-all plan) ]]; then
