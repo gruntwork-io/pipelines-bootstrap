@@ -167,6 +167,9 @@ outputs:
   github_collaborators:
     description: ""
     value: ${{ steps.cache.outputs.github_collaborators || steps.gruntwork_config.outputs.github_collaborators }}
+  is_delegated_repo:
+    description: ""
+    value: ${{ steps.cache.outputs.is_delegated_repo || steps.gruntwork_config.outputs.is_delegated_repo }}
 
 runs:
   using: composite
@@ -221,9 +224,10 @@ runs:
 
         CI_READONLY_USER: ${{ fromJson(inputs.cache || '{}').ci_readonly_user }}
         GITHUB_ORG: ${{ fromJson(inputs.cache || '{}').github_org }}
+        IS_DELEGATED_REPO: ${{ fromJson(inputs.cache || '{}').is_delegated_repo }}
 
         INFRA_MODULES_REPO_NAME: ${{ fromJson(inputs.cache || '{}').infra_modules_repo_name }}
-        INFRA_MODULES_RELEASE_VERSION:  ${{ fromJson(inputs.cache || '{}').infra_modules_release_version }}
+        INFRA_MODULES_RELEASE_VERSION: ${{ fromJson(inputs.cache || '{}').infra_modules_release_version }}
 
         CATALOG_REPOSITORIES: ${{ fromJson(inputs.cache || '{}').catalog_repositories }}
         GITHUB_COLLABORATORS: ${{ fromJson(inputs.cache || '{}').github_collaborators }}
