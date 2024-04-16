@@ -340,13 +340,11 @@ runs:
         COMMIT_SHA: ${{ steps.setup_action.outputs.branch }}
         TG_CMD: ${{ steps.setup_action.outputs.terragrunt_command }}
       run: |
-        set -x
-
         if [[ $TG_CMD =~ ^(plan|run-all plan) ]]; then
           PR_SEARCH="$(gh pr list --search "$COMMIT_SHA" --json author --json mergedBy --json number --json baseRefName --json commits)"
           PR_NUMBER="$(jq '.[].number' <<< "$PR_SEARCH")"
 
-          if [[ $(jq '. == []') == 'true' <<< "$PR_SEARCH" ]]; then
+          if [[ $(jq '. == []' <<< "$PR_SEARCH") == 'true' ]]; then
             SESSION_REQUESTER="PullRequest"
             SESSION_GIT_REF="PR-$(git rev-parse --short "$COMMIT_SHA")"
           else
