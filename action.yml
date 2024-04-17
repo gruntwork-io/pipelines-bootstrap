@@ -342,7 +342,7 @@ runs:
       run: |
         if [[ $TG_CMD =~ ^(plan|run-all plan) ]]; then
           PR_SEARCH="$(gh pr list --search "$COMMIT_SHA" --json author --json mergedBy --json number --json baseRefName --json commits)"
-          PR_NUMBER="$(jq '.[].number' <<< "$PR_SEARCH")"
+          PR_NUMBER="$(jq '.[-1].number' <<< "$PR_SEARCH")"
 
           if [[ $(jq '. == []' <<< "$PR_SEARCH") == 'true' ]]; then
             SESSION_REQUESTER="PullRequest"
@@ -353,7 +353,7 @@ runs:
           fi
         else
           PR_SEARCH="$(gh pr list --search "$COMMIT_SHA" --json author --json mergedBy --json number --json baseRefName --json commits --state merged)"
-          PR_NUMBER=$(jq '.[].number' <<< "$PR_SEARCH")
+          PR_NUMBER=$(jq '.[-1].number' <<< "$PR_SEARCH")
 
           SESSION_REQUESTER="$(jq -r '.[0].mergedBy.login' <<< "$PR_SEARCH")"
           SESSION_GIT_REF="$(jq -r '.[0].baseRefName' <<< "$PR_SEARCH")"
