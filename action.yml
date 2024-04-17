@@ -152,9 +152,6 @@ outputs:
   access_control_repo:
     description: ""
     value: ${{ steps.cache.outputs.access_control_repo || steps.gruntwork_config.outputs.access_control_repo }}
-  ci_readonly_user:
-    description: ""
-    value: ${{ steps.cache.outputs.ci_readonly_user || steps.gruntwork_config.outputs.ci_readonly_user }}
   github_org:
     description: ""
     value: ${{ steps.cache.outputs.github_org || steps.gruntwork_config.outputs.github_org }}
@@ -226,7 +223,6 @@ runs:
         DEFAULT_AWS_REGION: ${{ fromJson(inputs.cache || '{}').default_aws_region }}
         ACCESS_CONTROL_REPO: ${{ fromJson(inputs.cache || '{}').access_control_repo }}
 
-        CI_READONLY_USER: ${{ fromJson(inputs.cache || '{}').ci_readonly_user }}
         GITHUB_ORG: ${{ fromJson(inputs.cache || '{}').github_org }}
         IS_DELEGATED_REPO: ${{ fromJson(inputs.cache || '{}').is_delegated_repo }}
 
@@ -283,7 +279,6 @@ runs:
         echo "default_aws_region=${DEFAULT_AWS_REGION}" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=${ACCESS_CONTROL_REPO}" >> "$GITHUB_OUTPUT"
 
-        echo "ci_readonly_user=${CI_READONLY_USER}" >> "$GITHUB_OUTPUT"
         echo "github_org=${GITHUB_ORG}" >> "$GITHUB_OUTPUT"
 
         echo "infra_modules_repo_name=${INFRA_MODULES_REPO_NAME}" >> "$GITHUB_OUTPUT"
@@ -486,7 +481,6 @@ runs:
         default_aws_region=$(get_pipelines_config "default-aws-region")
         access_control_repo=$(get_pipelines_config "access-control-repo")
 
-        ci_readonly_user=$(get_pipelines_config "ci-readonly-user")
         github_org=$(get_pipelines_config "github-org")
 
         is_delegated_repo=$(get_pipelines_config_w_default "is-delegated-repo" 'false')
@@ -530,7 +524,6 @@ runs:
         echo "arch_catalog_version=$arch_catalog_version" >> "$GITHUB_OUTPUT"
         echo "default_aws_region=$default_aws_region" >> "$GITHUB_OUTPUT"
         echo "access_control_repo=$access_control_repo" >> "$GITHUB_OUTPUT"
-        echo "ci_readonly_user=$ci_readonly_user" >> "$GITHUB_OUTPUT"
         echo "github_org=$github_org" >> "$GITHUB_OUTPUT"
         echo "infra_modules_repo_name=$infra_modules_repo_name" >> "$GITHUB_OUTPUT"
         echo "infra_modules_release_version=$infra_modules_release_version" >> "$GITHUB_OUTPUT"
