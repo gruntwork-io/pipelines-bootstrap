@@ -488,7 +488,7 @@ runs:
         boilerplate_version=$(get_pipelines_config "boilerplate-version")
         arch_catalog_version=$(get_pipelines_config "arch-catalog-version")
         default_aws_region=$(get_pipelines_config "default-aws-region")
-        access_control_repo=$(get_pipelines_config "access-control-repo")
+        access_control_repo=$(get_pipelines_config "access-control-repo-name")
 
         github_org=$(get_pipelines_config "github-org")
 
