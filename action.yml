@@ -316,7 +316,7 @@ runs:
             # pipelines CI roles in AWS.  In v3 we can simply use central-pipeliens-plan/apply.
             # So in V3 we want terragrunt execute to run under the target account, not the management account,
             # which is passed from orchestrate as the CHILD_ACCOUNT_ID.
-            ACCOUNT_ID=$CHILD_ACCOUNT_ID"
+            ACCOUNT_ID=$CHILD_ACCOUNT_ID
             ;;
           *)
             echo "action=TERRAGRUNT_EXECUTE" >> "$GITHUB_OUTPUT"
