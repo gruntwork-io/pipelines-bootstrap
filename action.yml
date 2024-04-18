@@ -309,6 +309,15 @@ runs:
           "AccountsAdded")
             echo "action=BASELINE_ACCOUNT" >> "$GITHUB_OUTPUT"
             ;;
+          Pipeline*Permission* )
+            echo "action=TERRAGRUNT_EXECUTE" >> "$GITHUB_OUTPUT"
+            # This seems odd, and it is.  This is to ensure backwards compabiliity
+            # between pipelines v2 and v3. In v2 we had different roles for updating
+            # pipelines CI roles in AWS.  In v3 we can simply use central-pipeliens-plan/apply.
+            # So in V3 we want terragrunt execute to run under the target account, not the management account,
+            # which is passed from orchestrate as the CHILD_ACCOUNT_ID.
+            ACCOUNT_ID=$CHILD_ACCOUNT_ID"
+            ;;
           *)
             echo "action=TERRAGRUNT_EXECUTE" >> "$GITHUB_OUTPUT"
             ;;
