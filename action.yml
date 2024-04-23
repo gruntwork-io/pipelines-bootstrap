@@ -179,7 +179,7 @@ runs:
       shell: bash
       if: ${{ inputs.cache != '' }}
       env:
-        GRUNTWORK_CONFIG_FILE: ${{ toJson(fromJson(inputs.cache || '{}').gruntwork_config_file) }}
+        GRUNTWORK_CONFIG_FILE: ${{ fromJson(inputs.cache || '{}').gruntwork_config_file }}
         ROLE_NAME: ${{ fromJson(inputs.cache || '{}').role_name }}
         ROLE_SESSION_NAME: ${{ fromJson(inputs.cache || '{}').role_session_name }}
         PR_NUMBER: ${{ fromJson(inputs.cache || '{}').pr_number }}
