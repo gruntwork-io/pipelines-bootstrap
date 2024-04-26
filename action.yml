@@ -471,7 +471,15 @@ runs:
           fi
         }
 
-        pipelines_cli_version=$(get_pipelines_config "cli-version")
+        # With the initial release of pipelines v3 we decided
+        # we want to pin pipelines cli versions with the workflows (and thus the actions)
+        # to reduce the opportunity for customers to end up with incompatible versions.  As a result
+        # the definition of pipelines cli version moved FROM .gruntwork/config.yml to
+        # the environment at the top of the workflow files.  To avoid refactoring
+        # all our actions we're going to continue to store the pipeliens cli version in the
+        # gruntwork context, and just pull it from env instead of the config file.
+        pipelines_cli_version=$PIPELINES_CLI_VERSION
+
         raw_terraform_version=$(get_pipelines_config "terraform-version")
         raw_tofu_version=$(get_pipelines_config "tofu-version")
 
