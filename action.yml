@@ -311,9 +311,9 @@ runs:
             ;;
           Pipeline*Permission* )
             echo "action=TERRAGRUNT_EXECUTE" >> "$GITHUB_OUTPUT"
-            # This seems odd, and it is.  This is to ensure backwards compabiliity
+            # This seems odd, and it is.  This is to ensure backwards compatibility
             # between pipelines v2 and v3. In v2 we had different roles for updating
-            # pipelines CI roles in AWS.  In v3 we can simply use central-pipeliens-plan/apply.
+            # pipelines CI roles in AWS.  In v3 we can simply use root-pipelines-plan/apply.
             # So in V3 we want terragrunt execute to run under the target account, not the management account,
             # which is passed from orchestrate as the CHILD_ACCOUNT_ID.
             ACCOUNT_ID=$CHILD_ACCOUNT_ID
@@ -503,7 +503,7 @@ runs:
         is_delegated_repo=$(get_pipelines_config_w_default "is-delegated-repo" 'false')
         is_access_control_repo=$(get_pipelines_config_w_default "is-access-control-repo" 'false')
 
-        role_prefix='central'
+        role_prefix='root'
 
         if [[ $is_delegated_repo == 'true' ]]; then
           role_prefix='delegated'
