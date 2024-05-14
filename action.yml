@@ -53,9 +53,6 @@ outputs:
   pr_number:
     description: "The PR number"
     value: ${{ steps.cache.outputs.pr_number || steps.generate_role_session_name.outputs.pr_number }}
-  pipelines_cli_version:
-    description: "The version of the pipelines CLI to use"
-    value: ${{ steps.cache.outputs.pipelines_cli_version || steps.gruntwork_config.outputs.pipelines_cli_version }}
   tofu_version:
     description: "The version of Terraform that Gruntwork Pipelines will use"
     value: ${{ steps.cache.outputs.tofu_version || steps.gruntwork_config.outputs.tofu_version }}
@@ -183,7 +180,6 @@ runs:
         ROLE_NAME: ${{ fromJson(inputs.cache || '{}').role_name }}
         ROLE_SESSION_NAME: ${{ fromJson(inputs.cache || '{}').role_session_name }}
         PR_NUMBER: ${{ fromJson(inputs.cache || '{}').pr_number }}
-        PIPELINES_CLI_VERSION: ${{ fromJson(inputs.cache || '{}').pipelines_cli_version }}
         TOFU_VERSION: ${{ fromJson(inputs.cache || '{}').tofu_version }}
         TF_BINARY: ${{ fromJson(inputs.cache || '{}').tf_binary }}
 
@@ -236,7 +232,6 @@ runs:
         echo "role_name=${ROLE_NAME}" >> "$GITHUB_OUTPUT"
         echo "role_session_name=${ROLE_SESSION_NAME}" >> "$GITHUB_OUTPUT"
         echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
-        echo "pipelines_cli_version=${PIPELINES_CLI_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tofu_version=${TOFU_VERSION}" >> "$GITHUB_OUTPUT"
         echo "tf_binary=${TF_BINARY:-opentofu}" >> "$GITHUB_OUTPUT"
 
@@ -471,15 +466,6 @@ runs:
           fi
         }
 
-        # With the initial release of pipelines v3 we decided
-        # we want to pin pipelines cli versions with the workflows (and thus the actions)
-        # to reduce the opportunity for customers to end up with incompatible versions.  As a result
-        # the definition of pipelines cli version moved FROM .gruntwork/config.yml to
-        # the environment at the top of the workflow files.  To avoid refactoring
-        # all our actions we're going to continue to store the pipeliens cli version in the
-        # gruntwork context, and just pull it from env instead of the config file.
-        pipelines_cli_version=$PIPELINES_CLI_VERSION
-
         raw_terraform_version=$(get_pipelines_config "terraform-version")
         raw_tofu_version=$(get_pipelines_config "tofu-version")
 
@@ -528,7 +514,6 @@ runs:
           exit 1
         fi
 
-        echo "pipelines_cli_version=$pipelines_cli_version" >> "$GITHUB_OUTPUT"
         echo "tofu_version=$tofu_version" >> "$GITHUB_OUTPUT"
         echo "terragrunt_version=$terragrunt_version" >> "$GITHUB_OUTPUT"
         echo "tf_binary=$tf_binary" >> "$GITHUB_OUTPUT"
